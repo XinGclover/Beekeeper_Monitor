@@ -1,0 +1,1 @@
+create database beekeeper_monitor;
