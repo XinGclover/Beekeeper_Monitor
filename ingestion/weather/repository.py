@@ -1,35 +1,5 @@
 from __future__ import annotations
 
-from psycopg2.extras import execute_batch
-
-from ingestion.weather.models import WeatherLocation, WeatherObservation
-
-
-def fetch_locations(conn) -> list[WeatherLocation]:
-    sql = """
-        SELECT
-            location_id,
-            latitude,
-            longitude
-        FROM ingestion.location
-        WHERE latitude IS NOT NULL
-          AND longitude IS NOT NULL
-        ORDER BY location_id
-    """
-    with conn.cursor() as cur:
-        cur.execute(sql)
-        rows = cur.fetchall()
-
-    return [
-        WeatherLocation(
-            location_id =row[0],
-            latitude=float(row[1]),
-            longitude=float(row[2]),
-        )
-        for row in rows
-    ]
-
-
 def insert_weather_data(conn, observations):
     sql = """
         INSERT INTO ingestion.weather_data (
@@ -67,26 +37,3 @@ def insert_weather_data(conn, observations):
                 ),
             )
 
-
-def create_scraping_job(conn, source_id: int) -> int:
-    sql = """
-        INSERT INTO ingestion.scraping_job (source_id, status)
-        VALUES (%s, 'running')
-        RETURNING job_id
-    """
-
-    with conn.cursor() as cur:
-        cur.execute(sql, (source_id,))
-        job_id = cur.fetchone()[0]
-
-    return job_id
-
-def update_scraping_job_status(conn, job_id: int, status: str):
-    sql = """
-        UPDATE ingestion.scraping_job
-        SET status = %s
-        WHERE job_id = %s
-    """
-
-    with conn.cursor() as cur:
-        cur.execute(sql, (status, job_id))

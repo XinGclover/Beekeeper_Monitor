@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import logging
 
-import psycopg2
-
 from ingestion.weather.client import fetch_smhi_forecast, parse_forecast
-from ingestion.weather.repository import fetch_locations, insert_weather_data, create_scraping_job ,update_scraping_job_status
+from ingestion.common.location_repository import fetch_locations
+from ingestion.common.jobs import create_scraping_job ,update_scraping_job_status
+from ingestion.weather.repository import insert_weather_data
 from db import get_db_conn
 
 
@@ -22,6 +22,7 @@ def run_weather_pipeline() -> None:
     logging.info("Starting weather pipeline")
 
     conn = None
+    job_id = None
     try:
         conn = get_db_conn()
         job_id = create_scraping_job(conn, source_id=1)
@@ -56,7 +57,8 @@ def run_weather_pipeline() -> None:
 
     except Exception as e:
 
-        conn.rollback()
+        if conn is not None:
+            conn.close()
 
         update_scraping_job_status(conn, job_id, "failed")
 
@@ -64,7 +66,7 @@ def run_weather_pipeline() -> None:
 
         raise
 
-    finally:
+    if conn is not None:
         conn.close()
 
 if __name__ == "__main__":
