@@ -1,7 +1,7 @@
-create table if not exists ingestion.external_source (
-    source_id serial primary key,
-    source_name varchar(100) not null,
-    base_url varchar(255),
-    data_type varchar(50),
-    update_frequency varchar(50)
+CREATE TABLE IF NOT EXISTS ingestion.external_source (
+    source_id SERIAL PRIMARY KEY,
+    source_name VARCHAR(100) NOT NULL,
+    base_url VARCHAR(255),
+    data_type VARCHAR(50),
+    update_frequency VARCHAR(50)
 );

@@ -1,18 +1,14 @@
-drop table if exists ingestion.weather_data;
+DROP TABLE IF EXISTS ingestion.weather_data;
 
-create table if not exists ingestion.weather_data (
-    weather_id serial primary key,
-    job_id int not null references ingestion.scraping_job(job_id),
-    location_id int not null references ingestion.location(location_id),
-
-    air_temperature decimal(5,2),
-    relative_humidity decimal(5,2),
-    wind_speed decimal(6,2),
-    wind_direction decimal(6,2),
-
-    valid_time timestamp not null,
-    fetched_at timestamp not null default current_timestamp,
-
-    constraint uq_weather_location_valid_time
-        unique (location_id, valid_time)
+CREATE TABLE IF NOT EXISTS ingestion.weather_data (
+    weather_id SERIAL PRIMARY KEY,
+    job_id INT NOT NULL REFERENCES ingestion.scraping_job(job_id),
+    location_id INT NOT NULL REFERENCES ingestion.location(location_id),
+    air_temperature DECIMAL(5, 2),
+    relative_humidity DECIMAL(5, 2),
+    wind_speed DECIMAL(6, 2),
+    wind_direction DECIMAL(6, 2),
+    valid_time TIMESTAMP NOT NULL,
+    fetched_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_weather_location_valid_time UNIQUE (location_id, valid_time)
 );
