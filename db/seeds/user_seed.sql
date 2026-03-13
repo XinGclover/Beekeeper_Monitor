@@ -15,3 +15,13 @@ values
     true,
     null
 );
+
+
+INSERT INTO ingestion."user"
+(username, email, password_hash, notifications_enabled)
+VALUES
+('anna', 'anna@beekeeper.local', 'anna123', TRUE),
+('erik', 'erik@beekeeper.local', 'erik123', TRUE),
+('lars', 'lars@beekeeper.local', 'lars123', TRUE),
+('sofia', 'sofia@beekeeper.local', 'sofia123', TRUE),
+('maria', 'maria@beekeeper.local', 'maria123', TRUE);

@@ -12,7 +12,7 @@
 
 
 --\i db/tables/sensor_type.sql
-\i db/tables/user.sql
+--\i db/tables/user.sql
 --\i db/tables/country.sql
 --\i db/tables/apiary.sql
 --\i db/tables/apiary_environment.sql
@@ -31,4 +31,17 @@
 --\i db/seeds/sensor_type_seed.sql
 
 --\i db/seeds/sensor_seed.sql
-\i db/seeds/user_seed.sql
+--\i db/seeds/user_seed.sql
+
+--\i db/tables/metric_type.sql
+--\i db/tables/target_type.sql
+--\i db/tables/alarm_rule.sql
+--\i db/tables/alarm_rule_target.sql
+--\i db/tables/alarm_event.sql
+
+
+--\i db/seeds/metric_type_seed.sql
+--\i db/seeds/target_type_seed.sql
+
+
+--\i db/seeds/user_alarm_rule_seed.sql
