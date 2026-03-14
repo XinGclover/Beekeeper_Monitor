@@ -14,7 +14,7 @@ def fetch_sensor_data(conn):
 
 def fetch_weather_data(conn):
     sql = """
-        SELECT weather_id, location_id, air_temperature, relative_humidity, wind_speed
+        SELECT weather_id, location_id, air_temperature, relative_humidity, wind_speed, fetched_at
         FROM ingestion.weather_data
         ORDER BY fetched_at
     """
@@ -24,7 +24,7 @@ def fetch_weather_data(conn):
 
 def fetch_wildfire_data(conn):
     sql = """
-        SELECT wildfire_id, location_id, brightness, frp, severity_level_id
+        SELECT wildfire_id, location_id, brightness, frp, severity_level_id, fetched_at
         FROM ingestion.wildfire_data
         ORDER BY fetched_at
     """

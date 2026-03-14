@@ -6,9 +6,9 @@ from rule_engine.repository import (
 )
 
 WEATHER_METRIC_FIELD_MAP = {
-    "air_temperature": "air_temperature",
-    "relative_humidity": "relative_humidity",
-    "wind_speed": "wind_speed",
+    "weather_temperature": "air_temperature",
+    #"relative_humidity": "relative_humidity",
+    "weather_wind_speed": "wind_speed",
 }
 
 

@@ -80,15 +80,17 @@ Monitoring and Analytics
 
 ## Project Structure
 
-ingestion/
-  weather/
-    client.py
-    models.py
-    repository.py
-    pipeline.py
-
-db/
-  tables/
-    location.sql
-    weather_data.sql
-    scraping_job.sql
+beekeeper-monitor/
+├── ingestion/
+│   ├── weather/        # Weather ingestion pipeline
+│   ├── wildfire/       # Wildfire ingestion pipeline
+│   └── sensor/         # Sensor ingestion pipeline
+├── rule_engine/
+│   ├── pipeline/       # Sensor, weather, and wildfire alarm processors
+│   ├── repository.py   # Database access for rules and alarm events
+│   └── main.py         # Entry point for alarm processing
+├── dashboard/          # Streamlit app
+├── db/
+│   ├── tables/         # SQL table definitions
+│   └── seed/           # Test and lookup data
+└── README.md
