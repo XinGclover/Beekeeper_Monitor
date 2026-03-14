@@ -1,4 +1,3 @@
-import pandas as pd
 from psycopg2.extras import RealDictCursor
 
 

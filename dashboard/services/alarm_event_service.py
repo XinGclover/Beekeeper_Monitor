@@ -14,3 +14,16 @@ def get_alarm_events(conn):
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute(sql)
         return cur.fetchall()
+    
+
+def get_alarm_events_hourly(conn):
+  
+    sql = """
+    SELECT *
+    FROM ingestion.v_alarm_event_hourly
+    LIMIT 100
+    """
+
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        cur.execute(sql)
+        return cur.fetchall()
