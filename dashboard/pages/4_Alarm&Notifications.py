@@ -3,8 +3,12 @@ import pandas as pd
 
 from dashboard.services.notification_service import get_notifications
 from dashboard.services.alarm_event_service import get_alarm_events,get_alarm_events_hourly 
-from db import get_db_conn
+from core.db import get_db_conn
+from streamlit_autorefresh import st_autorefresh
 
+
+refresh_count = st_autorefresh(interval=20000, key="sensor_refresh")
+st.write("Refresh count:", refresh_count)
 
 st.title("Alarm Events & Notifications")
 

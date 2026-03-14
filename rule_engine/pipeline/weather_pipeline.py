@@ -43,9 +43,4 @@ def process_weather_alarms(conn) -> None:
                 float(rule["threshold"]),
             ):
                 insert_weather_alarm_event(conn, rule["rule_id"], weather_id)
-                print(
-                    f"WEATHER ALARM: weather_id={weather_id}, "
-                    f"location_id={location_id}, "
-                    f"rule={rule['name']}, "
-                    f"{metric_name}={value}"
-                )
+                

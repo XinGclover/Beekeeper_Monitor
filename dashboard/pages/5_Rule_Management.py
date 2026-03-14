@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from decimal import Decimal
 
-from db import get_db_conn
+from core.db import get_db_conn
 from dashboard.services.rule_management_service import (
     fetch_alarm_rules,
     update_alarm_rule

@@ -1,11 +1,13 @@
 import streamlit as st
 import pandas as pd
 
-from db import get_db_conn
-from dashboard.services.sensor_service import get_sensor_history,get_latest_sensor_data
-
+from core.db import get_db_conn
+from dashboard.services.sensor_service import get_sensor_history,get_latest_sensor_data,get_sensor_data_timeline
+from streamlit_autorefresh import st_autorefresh
 
 st.title("Sensor")
+refresh_count = st_autorefresh(interval=20000, key="sensor_refresh")
+st.write("Refresh count:", refresh_count)
 
 conn = get_db_conn()
 
@@ -20,7 +22,43 @@ try:
         df_latest = pd.DataFrame(latest)
         st.dataframe(df_latest)
 
+    st.subheader("Sensor Data Timeline")
 
+    selected_sensor_id = st.selectbox(
+        "Choose sensor",
+        options=df_latest["sensor_id"],
+        format_func=lambda x: f"Sensor {x}"
+    )
+
+    timeline = get_sensor_data_timeline(conn, sensor_id=selected_sensor_id)
+
+    if timeline:
+        df_timeline = pd.DataFrame(timeline)
+
+        df_timeline["measured_at"] = pd.to_datetime(df_timeline["measured_at"])
+        df_timeline["measurement"] = pd.to_numeric(
+            df_timeline["measurement"],
+            errors="coerce"
+        )
+
+        # senaste 1 timme
+        hours = st.slider("Time window (hours)", 1, 24, 1)
+
+        cutoff = pd.Timestamp.now() - pd.Timedelta(hours=hours)
+
+        df_recent = df_timeline[df_timeline["measured_at"] >= cutoff]
+
+        chart_df = (
+            df_recent[["measured_at", "measurement"]]
+            .dropna()
+            .sort_values("measured_at")
+            .set_index("measured_at")
+        )
+
+        st.dataframe(chart_df)
+        st.line_chart(chart_df)
+    else:
+        st.info("No sensor timeline found.")
     # -------- sensor history --------
 
     st.subheader("Sensor history")

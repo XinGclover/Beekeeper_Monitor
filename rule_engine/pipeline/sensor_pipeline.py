@@ -20,9 +20,5 @@ def process_sensor_alarms(conn):
         for rule in rules_by_sensor.get(sensor_id, []):
             if is_rule_matched(measurement, rule["condition_type"], float(rule["threshold"])):
                 insert_sensor_alarm_event(conn, rule["rule_id"], sensor_data_id)
-                print(
-                    f"ALARM: sensor_data_id={sensor_data_id}, "
-                    f"sensor_id={sensor_id}, rule={rule['name']}, value={measurement}"
-                )
 
 

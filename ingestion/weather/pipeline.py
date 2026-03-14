@@ -6,7 +6,7 @@ from ingestion.weather.client import fetch_smhi_forecast, parse_forecast
 from ingestion.common.location_repository import fetch_locations
 from ingestion.common.jobs import create_scraping_job ,update_scraping_job_status
 from ingestion.weather.repository import insert_weather_data
-from db import get_db_conn
+from app.db import get_db_conn
 
 
 

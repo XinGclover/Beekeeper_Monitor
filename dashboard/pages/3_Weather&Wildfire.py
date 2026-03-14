@@ -3,7 +3,7 @@ import pandas as pd
 
 from dashboard.services.weather_service import get_weather_data
 from dashboard.services.wildfire_service import get_wildfire_data
-from db import get_db_conn
+from core.db import get_db_conn
 
 
 st.title("Weather & Wildfire")

@@ -41,9 +41,4 @@ def process_wildfire_alarms(conn) -> None:
                 float(rule["threshold"]),
             ):
                 insert_wildfire_alarm_event(conn, rule["rule_id"], wildfire_id)
-                print(
-                    f"WILDFIRE ALARM: wildfire_id={wildfire_id}, "
-                    f"location_id={location_id}, "
-                    f"rule={rule['name']}, "
-                    f"{metric_name}={value}"
-                )
+                
