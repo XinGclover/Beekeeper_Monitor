@@ -1,13 +1,12 @@
-import pandas as pd
 from psycopg2.extras import RealDictCursor
 
 
-def get_notifications(conn):
+def get_weather_data(conn):
 
     sql = """
     SELECT *
-    FROM ingestion.notification
-    ORDER BY sent_at DESC
+    FROM ingestion.weather_data
+    ORDER BY valid_time DESC
     LIMIT 100
     """
 

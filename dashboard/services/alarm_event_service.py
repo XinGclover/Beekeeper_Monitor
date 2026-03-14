@@ -2,12 +2,12 @@ import pandas as pd
 from psycopg2.extras import RealDictCursor
 
 
-def get_notifications(conn):
+def get_alarm_events(conn):
 
     sql = """
     SELECT *
-    FROM ingestion.notification
-    ORDER BY sent_at DESC
+    FROM ingestion.alarm_event
+    ORDER BY triggered_at DESC
     LIMIT 100
     """
 
