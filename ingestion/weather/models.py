@@ -5,13 +5,6 @@ from datetime import datetime
 
 
 @dataclass
-class WeatherLocation:
-    location_id: int
-    latitude: float
-    longitude: float
-
-
-@dataclass
 class WeatherObservation:
     job_id: int
     location_id: int
@@ -19,4 +12,4 @@ class WeatherObservation:
     relative_humidity: float | None
     wind_speed: float | None
     wind_direction: float | None
-    valid_time: str
+    valid_time: datetime
