@@ -1,80 +1,59 @@
 INSERT INTO ingestion.alarm_rule_target (rule_id, target_type_id, target_id)
 VALUES
-    -- Sensor / hive related rules -> APIARY targets
-    (1, 2, 1),
-    (1, 2, 2),
-    (1, 2, 3),
-    (1, 2, 4),
 
-    (2, 2, 1),
-    (2, 2, 2),
-    (2, 2, 3),
-    (2, 2, 4),
+-- ======================
+-- SENSOR RULES → HIVE
+-- ======================
 
-    (3, 2, 1),
-    (3, 2, 2),
-    (3, 2, 3),
-    (3, 2, 4),
+-- rule 1: temperature high → hive 1
+(1, 3, 1),
 
-    (4, 2, 1),
-    (4, 2, 2),
-    (4, 2, 3),
-    (4, 2, 4),
+-- rule 2: temperature low → hive 2
+(2, 3, 2),
 
-    (5, 2, 1),
-    (5, 2, 2),
-    (5, 2, 3),
-    (5, 2, 4),
+-- rule 3: humidity high → hive 3
+(3, 3, 3),
 
-    (6, 2, 1),
-    (6, 2, 2),
-    (6, 2, 3),
-    (6, 2, 4),
+-- rule 4: weight low → hive 1
+(4, 3, 1),
 
-    -- Weather rules -> LOCATION targets
-    (7, 1, 1),
-    (7, 1, 2),
-    (7, 1, 3),
-    (7, 1, 4),
+-- rule 5: weight critical → hive 2
+(5, 3, 2),
 
-    (8, 1, 1),
-    (8, 1, 2),
-    (8, 1, 3),
-    (8, 1, 4),
+-- rule 6: weight very high → hive 3
+(6, 3, 3),
 
-    (9, 1, 1),
-    (9, 1, 2),
-    (9, 1, 3),
-    (9, 1, 4),
+-- ======================
+-- WEATHER RULES → LOCATION
+-- ======================
 
-    -- Wildfire rules -> LOCATION targets
-    (10, 1, 1),
-    (10, 1, 2),
-    (10, 1, 3),
-    (10, 1, 4),
+-- rule 7: extreme temperature → location 1
+(7, 1, 1),
 
-    (11, 1, 1),
-    (11, 1, 2),
-    (11, 1, 3),
-    (11, 1, 4)
-ON CONFLICT DO NOTHING;
+-- rule 8: cold weather → location 3
+(8, 1, 3),
+
+-- rule 9: strong wind → location 4
+(9, 1, 4),
+
+-- ======================
+-- WILDFIRE RULE → LOCATION
+-- ======================
+
+-- rule 10: wildfire risk → location 5
+(10, 1, 5);
 
 
-INSERT INTO ingestion.alarm_rule_target
-(rule_id, target_type_id, target_id)
+
+DELETE FROM ingestion.alarm_rule_target
+WHERE rule_id IN (1,2,3,4,5,6);
+
+
+INSERT INTO ingestion.alarm_rule_target (rule_id, target_type_id, target_id)
 VALUES
--- sensor 1
-(1, 4, 1),
-(2, 4, 1),
-(3, 4, 1),
-
--- sensor 2
-(1, 4, 2),
-(3, 4, 2),
-(4, 4, 2),
-
--- sensor 3
-(1, 4, 3),
-(5, 4, 3),
-(6, 4, 3)
-ON CONFLICT DO NOTHING;
+(1, 3, 1),
+(2, 3, 1),
+(3, 3, 1),
+(4, 3, 2),
+(5, 3, 2),
+(6, 3, 2);

@@ -7,7 +7,7 @@ from ingestion.common.location_repository import fetch_locations
 from ingestion.wildfire.client import fetch_wildfire_observations
 from ingestion.wildfire.models import WildfireObservation
 from ingestion.wildfire.repository import insert_wildfire_data
-from app.db import get_db_conn
+from core.db import get_db_conn
 import os
 
 FIRMS_API_KEY = os.getenv("FIRMS_API_KEY")

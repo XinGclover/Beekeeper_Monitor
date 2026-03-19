@@ -20,8 +20,9 @@ def create_notifications(conn):
         where n.notification_id is null
     """
 
-    with conn.cursor(cursor_factory=RealDictCursor) as cur:
-      cur.execute(sql)
+    with conn.cursor() as cur:
+        cur.execute(sql)
+        return cur.rowcount
 
 
 def get_notifications_for_user(conn, user_id: int):
