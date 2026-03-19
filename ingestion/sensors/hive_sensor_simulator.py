@@ -19,18 +19,18 @@ def generate_measurement(sensor_type_name: str, previous_value: float | None = N
     sensor_type = sensor_type_name.lower()
 
     if "temp" in sensor_type:
-        base = 32.0          # 35
-        noise = random.uniform(-4.0, 4.0)
+        base = 34.0          # 35
+        noise = random.uniform(-3.0, 3.0)
         value = base + noise
 
     elif "humid" in sensor_type:
-        base = 65.0         # 70
-        noise = random.uniform(-6.0, 6.0)
+        base = 68.0         # 70
+        noise = random.uniform(-5.0, 5.0)
         value = base + noise
 
     elif "weight" in sensor_type:
         if previous_value is None:
-            value = random.uniform(14.0, 90.0)      # 20, 15
+            value = random.uniform(14.0, 90.0)      # 20, 15, 80
         else:
             # vikt ändras långsamt
             value = previous_value + random.uniform(-0.2, 0.2)
