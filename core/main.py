@@ -12,6 +12,7 @@ def main():
         conn = get_db_conn()
 
         try:
+            print("Starting pipeline run...")
             process_sensor_alarms(conn)
             process_weather_alarms(conn)
             process_wildfire_alarms(conn)
@@ -26,6 +27,7 @@ def main():
 
         finally:
             conn.close()
+            print("Pipeline run completed")
 
         # run every 20 seconds
         time.sleep(20)

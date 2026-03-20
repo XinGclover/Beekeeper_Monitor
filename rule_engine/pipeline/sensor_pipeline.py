@@ -13,7 +13,6 @@ def process_sensor_alarms(conn):
     rules = fetch_sensor_rules(conn)
 
     for row in sensor_rows:
-        sensor_data_id = row["sensor_data_id"]
         sensor_id = row["sensor_id"]
         sensor_type_id = row["sensor_type_id"]
         measurement = row["measurement"]
@@ -37,7 +36,9 @@ def process_sensor_alarms(conn):
                 continue
 
             insert_sensor_alarm_event(
-                conn=conn,
-                rule_id=rule["rule_id"],
-                sensor_data_id=sensor_data_id
+                conn,
+                rule["rule_id"],
+                row["sensor_data_id"],
+                observed_value=row["measurement"],     
+                threshold_value=rule["threshold"],    
             )          

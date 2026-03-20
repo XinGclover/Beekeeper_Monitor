@@ -38,3 +38,10 @@ WHERE weather_id IS NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS uq_alarm_event_wildfire
 ON ingestion.alarm_event(rule_id, wildfire_id)
 WHERE wildfire_id IS NOT NULL;
+
+
+ALTER TABLE ingestion.alarm_event
+ADD COLUMN observed_value numeric(11,5);
+
+ALTER TABLE ingestion.alarm_event
+ADD COLUMN threshold_value numeric(11,5);

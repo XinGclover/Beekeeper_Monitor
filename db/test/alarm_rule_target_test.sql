@@ -3,7 +3,7 @@
 --Men ännu bättre är denna, som visar om metric också matchar:
 select
     art.rule_id,
-    ar.name as rule_name,
+    ar.rule_name,
     ar.metric_type_id,
     art.target_id as hive_id,
     s.sensor_id,
@@ -25,7 +25,7 @@ order by art.rule_id, s.sensor_id;
 
 select
     ar.rule_id,
-    ar.name as rule_name,
+    ar.rule_name,
     ar.metric_type_id,
     art.target_id as hive_id,
     s.sensor_id,
@@ -53,7 +53,7 @@ select *
 from ingestion.alarm_rule_target
 order by rule_id;
 
-select rule_id, name, metric_type_id
+select rule_id, rule_name, metric_type_id
 from ingestion.alarm_rule
 order by rule_id;
 

@@ -1,6 +1,6 @@
 select
     rule_id,
-    name,
+    rule_name,
     condition_type,
     threshold,
     is_active

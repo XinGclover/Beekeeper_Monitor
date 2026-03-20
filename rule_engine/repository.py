@@ -43,7 +43,7 @@ def fetch_sensor_rules(conn):
     sql = """
         SELECT
             ar.rule_id,
-            ar.name,
+            ar.rule_name,
             ar.metric_type_id,
             ar.condition_type,
             ar.threshold,
@@ -64,7 +64,7 @@ def fetch_weather_rules(conn):
     sql = """
         SELECT
             ar.rule_id,
-            ar.name,
+            ar.rule_name,
             ar.condition_type,
             ar.threshold,
             art.target_id AS location_id,
@@ -92,7 +92,7 @@ def fetch_wildfire_rules(conn):
     sql = """
         SELECT
             ar.rule_id,
-            ar.name,
+            ar.rule_name,
             ar.condition_type,
             ar.threshold,
             art.target_id AS location_id,
@@ -114,30 +114,78 @@ def fetch_wildfire_rules(conn):
     
 
 # ---------- alarm events ----------
-def insert_sensor_alarm_event(conn, rule_id: int, sensor_data_id: int):
+def insert_sensor_alarm_event(
+    conn,
+    rule_id: int,
+    sensor_data_id: int,
+    observed_value: float,
+    threshold_value: float,
+):
     sql = """
-        INSERT INTO ingestion.alarm_event (rule_id, sensor_data_id)
-        VALUES (%s, %s)
+        INSERT INTO ingestion.alarm_event (
+            rule_id,
+            sensor_data_id,
+            observed_value,
+            threshold_value,
+            triggered_at,
+            status
+        )
+        VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP, 'active')
         ON CONFLICT DO NOTHING
     """
     with conn.cursor() as cur:
-        cur.execute(sql, (rule_id, sensor_data_id))
+        cur.execute(
+            sql,
+            (rule_id, sensor_data_id, observed_value, threshold_value),
+        )
 
-def insert_weather_alarm_event(conn, rule_id: int, weather_id: int):
+def insert_weather_alarm_event(
+    conn,
+    rule_id: int,
+    weather_id: int,
+    observed_value: float,
+    threshold_value: float,
+):
     sql = """
-        INSERT INTO ingestion.alarm_event (rule_id, weather_id)
-        VALUES (%s, %s)
+        INSERT INTO ingestion.alarm_event (
+            rule_id,
+            weather_id,
+            observed_value,
+            threshold_value,
+            triggered_at,
+            status
+        )
+        VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP, 'active')
         ON CONFLICT DO NOTHING
     """
     with conn.cursor() as cur:
-        cur.execute(sql, (rule_id, weather_id))
+        cur.execute(
+            sql,
+            (rule_id, weather_id, observed_value, threshold_value),
+        )
 
 
-def insert_wildfire_alarm_event(conn, rule_id: int, wildfire_id: int):
+def insert_wildfire_alarm_event(
+    conn,
+    rule_id: int,
+    wildfire_id: int,
+    observed_value: float,
+    threshold_value: float,
+):
     sql = """
-        INSERT INTO ingestion.alarm_event (rule_id, wildfire_id)
-        VALUES (%s, %s)
+        INSERT INTO ingestion.alarm_event (
+            rule_id,
+            wildfire_id,
+            observed_value,
+            threshold_value,
+            triggered_at,
+            status
+        )
+        VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP, 'active')
         ON CONFLICT DO NOTHING
     """
     with conn.cursor() as cur:
-        cur.execute(sql, (rule_id, wildfire_id))
+        cur.execute(
+            sql,
+            (rule_id, wildfire_id, observed_value, threshold_value),
+        )

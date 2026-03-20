@@ -1,5 +1,5 @@
 INSERT INTO ingestion.alarm_rule
-(name, metric_type_id, condition_type, threshold, severity_level_id, is_active)
+(rule_name, metric_type_id, condition_type, threshold, severity_level_id, is_active)
 VALUES
 -- Temperature (sensor_temperature = 1)
 ('Hive temperature too high', 1, '>', 35, 2, TRUE),

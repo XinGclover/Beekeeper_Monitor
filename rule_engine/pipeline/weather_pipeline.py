@@ -42,5 +42,12 @@ def process_weather_alarms(conn) -> None:
                 rule["condition_type"],
                 float(rule["threshold"]),
             ):
-                insert_weather_alarm_event(conn, rule["rule_id"], weather_id)
                 
+                insert_weather_alarm_event(
+                    conn,
+                    rule["rule_id"],
+                    weather_id,
+                    observed_value=float(value),
+                    threshold_value=float(rule["threshold"]),
+                )
+                                

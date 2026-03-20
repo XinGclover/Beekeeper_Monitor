@@ -58,24 +58,69 @@ with tab2:
         st.info("This user has no notifications.")
 
     for n in all_notifications:
-        with st.container(border=True):
-            col1, col2 = st.columns([6, 2])
+        is_unread = not n["is_read"]
 
-            with col1:
-                st.markdown(f"**{n['notification_id']}**")
-                st.markdown(f"**{n['title']}**")
-                st.write(n["message"])
-                st.caption(f"Created at: {n['created_at']}")
-                st.caption(f"Read: {'Yes' if n['is_read'] else 'No'}")
+        emoji = "📩" if is_unread else "📬"
+        title_style = "font-weight:bold;" if is_unread else "color:#9ca3af;"
+        time_text = n["created_at"].strftime("%b %d, %H:%M")
 
-            with col2:
-                if not n["is_read"]:
-                    if st.button(
-                        "Mark as read",
-                        key=f"mark_read_{n['notification_id']}"
-                    ):
-                        mark_notification_as_read(conn, n["notification_id"])
-                        conn.commit()
-                        st.rerun()
-                else:
-                    st.success("Read")
+        col1, col2, col3, col4 = st.columns([0.4, 6, 2, 2])
+
+        with col1:
+            st.markdown(
+                f"""
+                <div style="
+                    font-size: 26px;
+                    line-height: 1;
+                    margin-top: 2px;
+                    text-align: center;
+                ">{emoji}</div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        with col2:
+            st.markdown(
+                f"""
+                <div style="
+                    color: {title_style};
+                    font-size: 16px;
+                    padding-top: 6px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                ">
+                    {n["title"]}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        with col3:
+            st.markdown(
+                f"""
+                <div style="
+                    text-align: right;
+                    color: #6b7280;
+                    font-size: 14px;
+                    padding-top: 6px;
+                ">
+                    {time_text}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        with col4:
+            if is_unread:
+                if st.button("Mark read", key=f"mark_read_{n['notification_id']}"):
+                    mark_notification_as_read(conn, n["notification_id"])
+                    conn.commit()
+                    st.rerun()
+            else:
+                st.markdown(
+                    "<div style='color:#9ca3af; font-size:13px; padding-top:8px;'>Read</div>",
+                    unsafe_allow_html=True,
+                )
+
+        st.markdown("<hr style='margin: 0.2rem 0 0.2rem 0;'>", unsafe_allow_html=True)

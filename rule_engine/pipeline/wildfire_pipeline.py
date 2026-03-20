@@ -6,6 +6,8 @@ from rule_engine.repository import (
 )
 
 WILDFIRE_METRIC_FIELD_MAP = {
+    "wildfire_brightness": "brightness",
+    "wildfire_frp": "frp",
     "wildfire_severity": "severity_level_id",
 }
 
@@ -40,5 +42,11 @@ def process_wildfire_alarms(conn) -> None:
                 rule["condition_type"],
                 float(rule["threshold"]),
             ):
-                insert_wildfire_alarm_event(conn, rule["rule_id"], wildfire_id)
+                insert_wildfire_alarm_event(
+                    conn, 
+                    rule["rule_id"], 
+                    wildfire_id,
+                    observed_value=float(value),
+                    threshold_value=float(rule["threshold"]),
+                    )
                 

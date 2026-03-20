@@ -32,11 +32,11 @@ run_loop() {
 }
 
 echo "Starting sensor simulator..."
-uv run python -m ingestion.sensors.hive_sensor_simulator --interval 120 &
+uv run python -m ingestion.sensors.hive_sensor_simulator --interval 300 &
 SIM_PID=$!
 
 echo "Starting weather pipeline loop..."
-run_loop "weather" 600 uv run python -m ingestion.weather.pipeline &
+run_loop "weather" 1200 uv run python -m ingestion.weather.pipeline &
 WEATHER_PID=$!
 
 echo "Starting wildfire pipeline loop..."
