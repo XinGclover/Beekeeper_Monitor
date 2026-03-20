@@ -3,9 +3,15 @@ from psycopg2.extras import RealDictCursor
 # ---------- source data ----------
 def fetch_sensor_data(conn):
     sql = """
-        SELECT sensor_data_id, sensor_id, measurement, measured_at
-        FROM ingestion.sensor_data
-        ORDER BY measured_at
+        SELECT
+            sd.sensor_data_id,
+            sd.sensor_id,
+            s.sensor_type_id,
+            sd.measurement,
+            sd.measured_at
+        FROM ingestion.sensor_data sd
+        JOIN ingestion.sensor s
+            ON sd.sensor_id = s.sensor_id
     """
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute(sql)
@@ -38,14 +44,15 @@ def fetch_sensor_rules(conn):
         SELECT
             ar.rule_id,
             ar.name,
+            ar.metric_type_id,
             ar.condition_type,
             ar.threshold,
             art.target_id AS sensor_id
         FROM ingestion.alarm_rule ar
         JOIN ingestion.alarm_rule_target art
-          ON ar.rule_id = art.rule_id
+            ON ar.rule_id = art.rule_id
         JOIN ingestion.target_type tt
-          ON art.target_type_id = tt.target_type_id
+            ON art.target_type_id = tt.target_type_id
         WHERE tt.target_type_name = 'sensor'
           AND ar.is_active = TRUE
     """

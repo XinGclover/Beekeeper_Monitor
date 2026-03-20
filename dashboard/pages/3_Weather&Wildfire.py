@@ -6,6 +6,7 @@ from dashboard.services.wildfire_service import get_wildfire_data
 from core.db import get_db_conn
 import plotly.express as px 
 from dashboard.services.location_service import fetch_location_overview
+from dashboard.utils.ui import get_risk_color
 
 # avoid Streamlit reruning scripts all the time, so you can do:
 @st.cache_data
@@ -21,23 +22,7 @@ def load_all_data():
     finally:
         conn.close()
 
-
 location_df, weather_df, wildfire_df = load_all_data()
-
-def format_value(value, suffix=""):
-    if pd.isna(value):
-        return "N/A"
-    return f"{value}{suffix}"
-
-
-def get_risk_color(severity):
-    if severity == 3:
-        return "red"
-    elif severity == 2:
-        return "orange"
-    elif severity == 1:
-        return "green"
-    return "gray"
 
 
 def show_location_map_page():
@@ -67,13 +52,23 @@ def show_location_map_page():
         color="risk_color", 
         size="frp",
         zoom=5,
-        height=500
+        height=500,
+        color_discrete_map={
+            "red": "red",
+            "orange": "orange",
+            "green": "green",
+            "gray": "gray",
+            "darkred": "darkred",
+            "yellow": "yellow"
+        }
     )
 
     fig.update_layout(
     map_style="open-street-map",
     margin={"r": 0, "t": 0, "l": 0, "b": 0},
     )
+
+    fig.update_traces(marker=dict(opacity=0.8))
 
     st.plotly_chart(fig)
 

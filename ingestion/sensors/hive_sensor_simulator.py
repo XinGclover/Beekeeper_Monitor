@@ -42,8 +42,6 @@ def generate_measurement(sensor_type_name: str, previous_value: float | None = N
 
     else:
         raise ValueError(f"Unknown sensor type: {sensor_type_name}")
-    
-    print(f"[SIM] sensor={sensor_type_name}, value={value}")
 
     return round(max(value, 0), 2)
 
@@ -104,9 +102,6 @@ def run_simulator(interval_seconds: int, hive_id: int | None = None) -> None:
         if not sensors:
             print("Inga sensorer hittades i ingestion.sensor")
             return
-
-        print(f"Simulator startad. Antal sensorer: {len(sensors)}")
-        print(f"Intervall: {interval_seconds} sekunder")
 
         while True:
             measured_at = datetime.now().replace(microsecond=0)

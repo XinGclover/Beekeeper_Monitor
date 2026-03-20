@@ -3,11 +3,8 @@ import pandas as pd
 
 from core.db import get_db_conn
 from dashboard.services.sensor_service import get_sensor_history,get_latest_sensor_data,get_sensor_data_timeline
-from streamlit_autorefresh import st_autorefresh
 
 st.title("Sensor")
-refresh_count = st_autorefresh(interval=20000, key="sensor_refresh")
-st.write("Refresh count:", refresh_count)
 
 conn = get_db_conn()
 
@@ -39,7 +36,7 @@ try:
         df_timeline["measurement"] = pd.to_numeric(
             df_timeline["measurement"],
             errors="coerce"
-        )
+        ).astype(float)
 
         # senaste 1 timme
         hours = st.slider("Time window (hours)", 1, 24, 1)
@@ -74,6 +71,8 @@ try:
     selected_sensor = st.selectbox("Select sensor", sensor_ids)
 
     df = df[df["sensor_id"] == selected_sensor]
+    df["period_date"] = pd.to_datetime(df["period_date"])
+    df["measurement_avg"] = pd.to_numeric(df["measurement_avg"], errors="coerce").astype(float)
 
     st.line_chart(
         df.set_index("period_date")["measurement_avg"]
