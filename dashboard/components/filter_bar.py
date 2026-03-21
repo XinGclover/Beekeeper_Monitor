@@ -7,6 +7,7 @@ from dashboard.services.filter_service import (
     get_hives,
     get_sensors,
 )
+from dashboard.components.time_filter import render_time_filter
 
 
 def _to_options(rows, id_key, label_key):
@@ -101,6 +102,10 @@ def render_filter_bar(conn) -> Filters:
             else 0,
         )
 
+    col_time, space = st.columns(2)
+    with col_time:
+        render_time_filter()
+
     st.session_state.sensor_id = new_sensor
 
     return Filters(
@@ -108,4 +113,6 @@ def render_filter_bar(conn) -> Filters:
         apiary_id=st.session_state.apiary_id,
         hive_id=st.session_state.hive_id,
         sensor_id=st.session_state.sensor_id,
+        time_range=st.session_state.time_range
     )
+
