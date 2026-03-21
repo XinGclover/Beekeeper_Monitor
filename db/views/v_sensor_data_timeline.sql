@@ -2,11 +2,13 @@ create or replace view ingestion.v_sensor_data_timeline as
 select
     sd.sensor_data_id,
     sd.sensor_id,
+    concat(st.sensor_type_name, ' #', s.sensor_id) as sensor_name,
     s.hive_id,
+    h.apiary_id,
+    l.location_id,
     st.sensor_type_name,
     sd.measurement,
-    sd.measured_at,
-    l.city
+    sd.measured_at
 from ingestion.sensor_data sd
 join ingestion.sensor s
     on sd.sensor_id = s.sensor_id

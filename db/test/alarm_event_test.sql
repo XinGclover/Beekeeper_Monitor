@@ -178,3 +178,5 @@ WHERE sd.sensor_id = 1
       )
 ORDER BY sd.measured_at DESC;
 
+
+

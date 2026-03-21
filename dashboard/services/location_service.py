@@ -1,5 +1,5 @@
 import pandas as pd
-
+from psycopg2.extras import RealDictCursor
 
 def fetch_location_overview(conn):
     sql = """

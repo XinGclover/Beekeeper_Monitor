@@ -1,6 +1,7 @@
 create or replace view ingestion.v_sensor_latest as
 select
     s.sensor_id,
+	concat(st.sensor_type_name, ' #', s.sensor_id) as sensor_name,
     s.hive_id,
     h.apiary_id,
     s.sensor_type_id,
