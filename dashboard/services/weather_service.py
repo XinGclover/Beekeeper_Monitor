@@ -16,17 +16,17 @@ def get_weather_data(conn):
         return cur.fetchall()
     
 
-# def get_weather_timeline(conn, filters=None):
-#     where_sql, params = build_filter_conditions(filters, time_column="fetched_at")
+def get_weather_timeline(conn, filters=None):
+    where_sql, params = build_filter_conditions(filters, time_column="fetched_at")
 
-#     sql = """
-#         select *
-#         from ingestion.v_weather_timeline
-#         {where_sql}
-#         order by fetched_at desc
-#         limit 500
-#     """
+    sql = f"""
+        select *
+        from ingestion.v_weather_timeline
+        {where_sql}
+        order by fetched_at desc
+        limit 500
+    """
 
-#     with conn.cursor(cursor_factory=RealDictCursor) as cur:
-#         cur.execute(sql, params)
-#         return cur.fetchall()
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        cur.execute(sql, params)
+        return cur.fetchall()

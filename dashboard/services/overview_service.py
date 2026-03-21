@@ -3,6 +3,7 @@ from dashboard.services.sensor_service import (
     get_latest_sensor_data_overview
 )
 from dashboard.services.kpi_service import build_sensor_kpis
+from dashboard.services.weather_service import get_weather_timeline
 from psycopg2.extras import RealDictCursor
 import pandas as pd
 
@@ -24,10 +25,10 @@ def load_overview_data(conn, filters):
             "timeseries": timeline_rows,
             "latest": latest_rows
         },
-        # "weather": {
+        "weather": {
         #     "summary": get_latest_weather_summary(conn, filters),
-        #     "timeseries": get_weather_timeline(conn, filters),
-        # },
+            "timeseries": get_weather_timeline(conn, filters),
+         },
         # "wildfire": {
         #     "latest": get_latest_wildfire_events(conn, filters),
         #     "map_points": get_wildfire_map_points(conn, filters),
