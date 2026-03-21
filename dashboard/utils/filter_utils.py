@@ -25,6 +25,19 @@ class Filters:
             "start_time": self.start_time,
             "end_time": self.end_time
         }
+    
+TIME_RANGE_MAP = {
+    "1h": timedelta(hours=1),
+    "6h": timedelta(hours=6),
+    "24h": timedelta(hours=24),
+    "7d": timedelta(days=7),
+    "30d": timedelta(days=30),
+}
+
+def resolve_time_range(time_range: str):
+    end_time = datetime.now()
+    delta = TIME_RANGE_MAP.get(time_range, timedelta(hours=24))
+    return end_time - delta, end_time
 
 
 def get_time_from(filters: Filters | None) -> datetime | None:
@@ -67,11 +80,13 @@ def build_filter_conditions(filters, time_column=None):
         params.append(filters.sensor_id)
 
     # TIME filter flexibel
-    if time_column:
-        time_from = get_time_from(filters)
-        if time_from:
-            conditions.append(f"{time_column} >= %s")
-            params.append(time_from)
+    if time_column and filters.time_range:
+        start_time, end_time = resolve_time_range(filters.time_range)
+
+        conditions.append(f"{time_column} >= %s")
+        conditions.append(f"{time_column} <= %s")
+
+        params.extend([start_time, end_time])
 
     where_sql = ""
     if conditions:

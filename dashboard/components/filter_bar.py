@@ -102,7 +102,7 @@ def render_filter_bar(conn) -> Filters:
             else 0,
         )
 
-    col_time, space = st.columns(2)
+    col_time, space = st.columns([3,1])
     with col_time:
         render_time_filter()
 
