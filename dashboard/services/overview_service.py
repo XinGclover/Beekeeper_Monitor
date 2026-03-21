@@ -2,41 +2,27 @@ from dashboard.services.sensor_service import (
     get_sensor_data_timeline_overview,
     get_latest_sensor_data_overview
 )
-# from dashboard.services.weather_service import (
-#     get_weather_overview_summary,
-#     get_weather_overview_timeseries,
-# )
-# from dashboard.services.alarm_event_service import (
-#     get_alarm_events,
-#     get_alarm_events_hourly,
-#     get_active_alarm_count,
-# )
-# from dashboard.services.notification_service import (
-#     get_latest_notifications_for_overview,
-#     get_unread_notification_count_for_overview,
-# )
-# from dashboard.services.wildfire_service import get_wildfire_risk_summary
-# from dashboard.services.location_service import get_location_count
-# from dashboard.services.sensor_service import get_sensor_count
+from dashboard.services.kpi_service import build_sensor_kpis
 from psycopg2.extras import RealDictCursor
+import pandas as pd
+
 
 
 def load_overview_data(conn, filters):
+    timeline_rows = get_sensor_data_timeline_overview(conn, filters)
+    latest_rows = get_latest_sensor_data_overview(conn, filters)
+
+    df_timeline = pd.DataFrame(timeline_rows)
+    df_latest = pd.DataFrame(latest_rows)
     return {
         # "summary": {
         #     "sensor_count": get_sensor_count(conn, filters),
         #     "location_count": get_location_count(conn, filters),
         # },
-        # "kpis": {
-        #     "avg_temperature": get_avg_temperature(conn, filters),
-        #     "avg_humidity": get_avg_humidity(conn, filters),
-        #     "active_alarms": get_active_alarm_count(conn, filters),
-        #     "wildfire_risk": get_wildfire_risk(conn, filters),
-        #     "notifications": get_unread_notification_count(conn, filters),
-        # },
+        "kpis": build_sensor_kpis(df_timeline, df_latest),
         "sensor": {
-            "timeseries": get_sensor_data_timeline_overview(conn, filters),
-            "latest": get_latest_sensor_data_overview(conn, filters)
+            "timeseries": timeline_rows,
+            "latest": latest_rows
         },
         # "weather": {
         #     "summary": get_latest_weather_summary(conn, filters),

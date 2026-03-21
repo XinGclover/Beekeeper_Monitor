@@ -1,20 +1,84 @@
 import streamlit as st
 
+def format_kpi_value(kpi: dict) -> str:
+    value = kpi.get("value")
+    unit = kpi.get("unit", "")
 
-def render_overview_kpis(kpis: dict):
-    col1, col2, col3, col4, col5 = st.columns(5)
+    if value is None:
+        return "-"
 
-    with col1:
-        st.metric("Avg Temperature", kpis["avg_temperature"])
+    return f"{value}{unit}"
 
-    with col2:
-        st.metric("Avg Humidity", kpis["avg_humidity"])
+def get_kpi_emoji(label: str) -> str:
+    label = label.lower()
 
-    with col3:
-        st.metric("Active Alarms", kpis["active_alarms"])
+    if "temperature" in label:
+        return "🌡️"
+    if "humidity" in label:
+        return "💧"
+    if "alarm" in label:
+        return "⚠️"
+    if "wildfire" in label:
+        return "🔥"
+    if "notification" in label:
+        return "🔔"
 
-    with col4:
-        st.metric("Wildfire Risk", kpis["wildfire_risk"])
+    return "📊"
 
-    with col5:
-        st.metric("Notifications", kpis["notifications"])
+
+def render_kpi_row(kpis: dict):
+    st.markdown(
+        """
+        <style>
+        .kpi-container {
+            display: flex;
+            gap: 16px;
+        }
+        .kpi-card {
+            flex: 1;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px 20px;
+            border: 1px solid #e5e7eb;
+        }
+        .kpi-title {
+            font-size: 13px;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 600;
+            margin-top: 8px;
+            color: #111827;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+   
+    cols = st.columns(len(kpis))
+
+    for col, (_, kpi) in zip(cols, kpis.items()):
+        label = kpi.get("label", "")
+        value = kpi.get("value", "-")
+        unit = kpi.get("unit", "")
+
+        emoji = get_kpi_emoji(label)
+
+        with col:
+            st.markdown(
+                f"""
+                <div class="kpi-card">
+                    <div class="kpi-title">
+                        {emoji} {label}
+                    </div>
+                    <div class="kpi-value">
+                        {value}{unit}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )

@@ -7,6 +7,7 @@ select
     st.sensor_type_name,
     l.location_id,
     l.city,
+	sd.measured_at,
     date(sd.measured_at) as period_date,
     avg(sd.measurement) as measurement_avg,
     min(sd.measurement) as measurement_min,
@@ -31,4 +32,5 @@ group by
     st.sensor_type_name,
     l.location_id,
     l.city,
+	sd.measured_at,
     date(sd.measured_at);

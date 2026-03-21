@@ -2,6 +2,7 @@ import streamlit as st
 from core.db import get_db_conn
 from dashboard.components.filter_bar import render_filter_bar
 from dashboard.components.sensor_overview_section import render_sensor_overview_section
+from dashboard.components.overview_kpis import render_kpi_row
 from dashboard.services.overview_service import load_overview_data
 
 def show_overview_page():
@@ -11,9 +12,10 @@ def show_overview_page():
     filters = render_filter_bar(conn)
     data = load_overview_data(conn, filters)
 
+    render_kpi_row(data["kpis"])
     render_sensor_overview_section(data["sensor"])
 
-    # kpis = get_overview_kpis(conn, filters)
+    
     # alarms = get_alarm_summary(conn, filters)
     # sensor_history = get_sensor_history(conn, filters)
 
