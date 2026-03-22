@@ -10,7 +10,6 @@ class Filters:
     apiary_id: int | None = None
     hive_id: int | None = None
     sensor_id: int | None = None
-    time_range: str = "24 Hours"
     time_range: str = "24h"   # "24h" | "7d" | "30d" | "custom"
     start_time: datetime | None = None
     end_time: datetime | None = None
