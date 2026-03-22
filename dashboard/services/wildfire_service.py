@@ -17,6 +17,7 @@ def get_wildfire_data(conn):
         return cur.fetchall()
     
 
+# Overview page
 def get_wildfire_map_points(conn, filters: Filters | None = None):
     where_sql, params = build_filter_conditions(filters, time_column="detected_at")
 
