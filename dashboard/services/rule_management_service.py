@@ -2,7 +2,7 @@ def fetch_alarm_rules(conn):
     sql = """
         SELECT
             rule_id,
-            name,
+            rule_name,
             metric_type_id,
             condition_type,
             threshold,

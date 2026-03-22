@@ -42,12 +42,12 @@ st.caption("Edit threshold and active status directly in the table, then click S
 
 edited_df = st.data_editor(
     df,
-    use_container_width=True,
+    width='stretch',
     hide_index=True,
     num_rows="fixed",
     column_config={
         "rule_id": st.column_config.NumberColumn("Rule ID", disabled=True),
-        "name": st.column_config.TextColumn("Rule Name", disabled=True),
+        "rule_name": st.column_config.TextColumn("Rule Name", disabled=True),
         "metric_type_id": st.column_config.NumberColumn("Metric Type ID", disabled=True),
         "condition_type": st.column_config.TextColumn("Condition", disabled=True),
         "threshold": st.column_config.NumberColumn(
@@ -59,13 +59,13 @@ edited_df = st.data_editor(
         "severity_level_id": st.column_config.NumberColumn("Severity Level ID", disabled=True),
         "is_active": st.column_config.CheckboxColumn("Active"),
     },
-    disabled=["rule_id", "name", "metric_type_id", "condition_type", "severity_level_id"],
+    disabled=["rule_id", "rule_name", "metric_type_id", "condition_type", "severity_level_id"],
 )
 
 col1, col2 = st.columns([1, 6])
 
 with col1:
-    if st.button("Save changes", use_container_width=True):
+    if st.button("Save changes", width='stretch'):
         changed_rows = []
 
         for i in range(len(df)):
@@ -106,5 +106,5 @@ with col1:
                 conn.close()
 
 with col2:
-    if st.button("Refresh", use_container_width=False):
+    if st.button("Refresh", width='content'):
         st.rerun()

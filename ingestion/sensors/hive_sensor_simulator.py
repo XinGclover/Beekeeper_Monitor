@@ -3,7 +3,7 @@ import random
 import time
 from datetime import datetime
 
-from db import get_db_conn
+from core.db import get_db_conn
 from ingestion.common.jobs import create_scraping_job ,update_scraping_job_status
 from ingestion.sensors.sensor_repository import fetch_sensors, insert_sensor_data
 
@@ -19,18 +19,18 @@ def generate_measurement(sensor_type_name: str, previous_value: float | None = N
     sensor_type = sensor_type_name.lower()
 
     if "temp" in sensor_type:
-        base = 34.5
+        base = 34.0          # 35
         noise = random.uniform(-3.0, 3.0)
         value = base + noise
 
     elif "humid" in sensor_type:
-        base = 68.0
-        noise = random.uniform(-8.0, 8.0)
+        base = 68.0         # 70
+        noise = random.uniform(-5.0, 5.0)
         value = base + noise
 
     elif "weight" in sensor_type:
         if previous_value is None:
-            value = random.uniform(12.0, 90.0)
+            value = random.uniform(14.0, 90.0)      # 20, 15, 80
         else:
             # vikt ändras långsamt
             value = previous_value + random.uniform(-0.2, 0.2)
@@ -41,8 +41,7 @@ def generate_measurement(sensor_type_name: str, previous_value: float | None = N
         value = base + noise
 
     else:
-        # fallback för okända sensortyper
-        value = random.uniform(0.0, 100.0)
+        raise ValueError(f"Unknown sensor type: {sensor_type_name}")
 
     return round(max(value, 0), 2)
 
@@ -104,9 +103,6 @@ def run_simulator(interval_seconds: int, hive_id: int | None = None) -> None:
             print("Inga sensorer hittades i ingestion.sensor")
             return
 
-        print(f"Simulator startad. Antal sensorer: {len(sensors)}")
-        print(f"Intervall: {interval_seconds} sekunder")
-
         while True:
             measured_at = datetime.now().replace(microsecond=0)
 
@@ -159,18 +155,18 @@ def parse_args():
         "--interval",
         type=int,
         default=10,
-        help="Hur många sekunder mellan varje batch",
+        help="How many seconds between two batches",
     )
     parser.add_argument(
         "--hive-id",
         type=int,
         default=None,
-        help="Valfritt: simulera bara för ett specifikt hive_id",
+        help="Optional: simulate only for a specific hive_id",
     )
     parser.add_argument(
         "--once",
         action="store_true",
-        help="Kör bara en batch och avsluta",
+        help="Just run a batch and exit",
     )
     return parser.parse_args()
 

@@ -7,3 +7,6 @@ CREATE TABLE IF NOT EXISTS ingestion.alarm_rule (
     severity_level_id INT REFERENCES ingestion.severity_level(severity_level_id),
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
+
+ALTER TABLE ingestion.alarm_rule
+RENAME COLUMN name TO rule_name;

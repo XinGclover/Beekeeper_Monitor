@@ -7,7 +7,7 @@ from ingestion.common.location_repository import fetch_locations
 from ingestion.wildfire.client import fetch_wildfire_observations
 from ingestion.wildfire.models import WildfireObservation
 from ingestion.wildfire.repository import insert_wildfire_data
-from app.db import get_db_conn
+from core.db import get_db_conn
 import os
 
 FIRMS_API_KEY = os.getenv("FIRMS_API_KEY")
@@ -116,18 +116,23 @@ def _find_nearest_location_id(lat: float, lon: float, locations: list) -> int | 
 
 
 def _map_severity_level(confidence: str | None, frp: float | None) -> int | None:
+    if frp is not None:
+        if frp >= 20:
+            return 5  # critical
+        elif frp >= 10:
+            return 4  # very high
+        elif frp >= 5:
+            return 3  # high
+        elif frp >= 2:
+            return 2  # medium
+        else:
+            return 1  # low
+
     if confidence == "h":
         return 3
     if confidence == "n":
         return 2
     if confidence == "l":
-        return 1
-
-    if frp is not None:
-        if frp >= 10:
-            return 3
-        if frp >= 5:
-            return 2
         return 1
 
     return None
