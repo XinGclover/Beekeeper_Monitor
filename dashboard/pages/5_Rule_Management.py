@@ -42,7 +42,7 @@ st.caption("Edit threshold and active status directly in the table, then click S
 
 edited_df = st.data_editor(
     df,
-    use_container_width=True,
+    width='stretch',
     hide_index=True,
     num_rows="fixed",
     column_config={
@@ -65,7 +65,7 @@ edited_df = st.data_editor(
 col1, col2 = st.columns([1, 6])
 
 with col1:
-    if st.button("Save changes", use_container_width=True):
+    if st.button("Save changes", width='stretch'):
         changed_rows = []
 
         for i in range(len(df)):
@@ -106,5 +106,5 @@ with col1:
                 conn.close()
 
 with col2:
-    if st.button("Refresh", use_container_width=False):
+    if st.button("Refresh", width='content'):
         st.rerun()

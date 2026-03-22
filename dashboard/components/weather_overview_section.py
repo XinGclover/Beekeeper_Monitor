@@ -37,4 +37,4 @@ def render_weather_overview_section(weather_data: dict):
         ["air_temperature", "relative_humidity", "wind_speed"]
     ]
 
-    st.line_chart(chart_df, use_container_width=True)
+    st.line_chart(chart_df, width='stretch')

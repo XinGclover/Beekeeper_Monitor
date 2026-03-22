@@ -31,4 +31,4 @@ def render_sensor_overview_section(sensor_data: dict):
 
     if sensor_data["latest"]:
         df_table = pd.DataFrame(sensor_data["latest"])
-        st.dataframe(df_table, use_container_width=True, hide_index=True)
+        st.dataframe(df_table, width='stretch', hide_index=True)

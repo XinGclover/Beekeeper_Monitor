@@ -13,4 +13,4 @@ def render_alarm_overview_section(alarm_data: dict):
 
     if alarm_data["latest"]:
         df_latest = pd.DataFrame(alarm_data["latest"])
-        st.dataframe(df_latest, use_container_width=True, hide_index=True)
+        st.dataframe(df_latest, width='stretch', hide_index=True)

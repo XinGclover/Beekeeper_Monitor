@@ -5,6 +5,7 @@ from dashboard.components.filter_bar import render_filter_bar
 from dashboard.components.sensor_overview_section import render_sensor_overview_section
 from dashboard.components.overview_kpis import render_kpi_row
 from dashboard.components.weather_overview_section import render_weather_overview_section
+from dashboard.components.wildfire_overview_section import render_wildfire_overview_section
 
 def show_overview_page():
     st.title("Overview")
@@ -17,18 +18,7 @@ def show_overview_page():
     render_sensor_overview_section(data["sensor"])
 
     render_weather_overview_section(data["weather"])
-    # alarms = get_alarm_summary(conn, filters)
-    # sensor_history = get_sensor_history(conn, filters)
-
-    # col1, col2, col3 = st.columns(3)
-    # col1.metric("Active Hives", kpis["active_hives"])
-    # col2.metric("Sensors", kpis["sensor_count"])
-    # col3.metric("Active Alarms", kpis["active_alarms"])
-
-    # st.subheader("Alarm Summary")
-    # st.dataframe(alarms, use_container_width=True)
-
-    # st.subheader("Sensor History")
-    # st.dataframe(sensor_history, use_container_width=True)
+    render_wildfire_overview_section(data["wildfire"])
+   
 
 show_overview_page()
