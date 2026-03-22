@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+from dashboard.components.ui_styles import inject_kpi_card_css
+from dashboard.components.kpi_component import render_kpi_card
 
 
 def render_notification_overview_section(notification_data: dict):
@@ -10,11 +12,25 @@ def render_notification_overview_section(notification_data: dict):
 
     total_count = len(latest_rows)
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric("Unread notifications", unread_count)
-    with col2:
-        st.metric("Latest loaded", total_count)
+    inject_kpi_card_css()
+    metric_cols = st.columns(5)
+
+    with metric_cols[0]:
+        render_kpi_card(
+            "Unread notifications",
+            unread_count,
+            "",
+            "📩"
+        )
+
+    with metric_cols[1]:
+        render_kpi_card(
+            "Latest loaded",
+            total_count,
+            "",
+            "📊"
+        )
+
 
     if not latest_rows:
         st.info("No notifications found.")
@@ -48,33 +64,49 @@ def render_notification_overview_section(notification_data: dict):
             )
 
         with col2:
-            subtitle = ""
-            if n.get("target_name") and n.get("severity_name"):
-                subtitle = f"{n['target_name']} · {n['severity_name']}"
+            rule_name = n.get("rule_name", "-")
+            target_name = n.get("target_name", "-")
+            severity_name = n.get("severity_name", "-").lower()
+
+            severity_color_map = {
+                "low": "#10b981",
+                "medium": "#f59e0b",
+                "high": "#ef4444",
+            }
+            severity_color = severity_color_map.get(severity_name, "#6b7280")
+
+            time_text = ""
+            if n.get("created_at"):
+                time_text = pd.to_datetime(n["created_at"]).strftime("%b %d, %H:%M")
 
             st.markdown(
                 f"""
-                <div style="padding-top:4px;">
-                    <div style="
-                        color:{title_color};
-                        font-size:15px;
-                        font-weight:{title_weight};
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    ">
-                        {n["title"]}
-                    </div>
-                    <div style="
-                        color:#6b7280;
-                        font-size:13px;
-                        margin-top:2px;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    ">
-                        {subtitle}
-                    </div>
+                <div style="
+                    display:flex;
+                    align-items:center;
+                    justify-content:space-between;
+                    gap:12px;
+                ">
+
+                <div style="
+                    font-size:15px;
+                    font-weight:{title_weight};
+                    color:{title_color};
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    flex:1;
+                ">
+                    {rule_name}
+                </div>
+
+                <div>{target_name}</div>
+
+                <div style="color:{severity_color}; font-weight:600;">
+                    {severity_name}
+                </div>
+                </div>
+
                 </div>
                 """,
                 unsafe_allow_html=True,

@@ -8,7 +8,7 @@ from dashboard.components.weather_overview_section import render_weather_overvie
 from dashboard.components.wildfire_overview_section import render_wildfire_overview_section
 from dashboard.components.alarm_overview_section import render_alarm_overview_section
 from dashboard.components.notification_overview_section import render_notification_overview_section
-from dashboard.components.ui_styles import inject_sticky_topbar_css
+from dashboard.components.ui_styles import (inject_sticky_topbar_css,inject_page_compact_css)
 
 def show_overview_page():
     st.title("Overview")
@@ -27,4 +27,6 @@ def show_overview_page():
     render_notification_overview_section(data["notifications"])
    
 
+st.set_page_config(page_title="Overview", layout="wide")
+inject_page_compact_css()
 show_overview_page()

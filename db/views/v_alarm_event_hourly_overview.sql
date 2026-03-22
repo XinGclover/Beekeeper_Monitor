@@ -5,6 +5,7 @@ SELECT
   location_id,
   apiary_id,
   hive_id,
+  sensor_id,
   count(*) AS alarm_count
 FROM
   ingestion.v_alarm_event_latest
@@ -12,6 +13,5 @@ GROUP BY
   date_trunc('hour', triggered_at),
   location_id,
   apiary_id,
-  hive_id
-ORDER BY
-  HOUR;
+  hive_id,
+  sensor_id;

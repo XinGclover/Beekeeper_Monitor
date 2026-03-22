@@ -1,5 +1,5 @@
 from psycopg2.extras import RealDictCursor
-from dashboard.utils.filter_utils import Filters, build_filter_conditions
+from dashboard.utils.filter_utils import Filters, build_location_time_filter
 
 
 def get_weather_data(conn):
@@ -18,7 +18,7 @@ def get_weather_data(conn):
 
 # Overview page
 def get_weather_timeline(conn, filters=None):
-    where_sql, params = build_filter_conditions(filters, time_column="fetched_at")
+    where_sql, params = build_location_time_filter(filters, time_column="fetched_at")
 
     sql = f"""
         select *

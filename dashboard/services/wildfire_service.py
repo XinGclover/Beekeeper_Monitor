@@ -1,6 +1,6 @@
 from psycopg2.extras import RealDictCursor
 
-from dashboard.utils.filter_utils import build_filter_conditions, Filters
+from dashboard.utils.filter_utils import build_location_time_filter, Filters
 
 
 def get_wildfire_data(conn):
@@ -19,27 +19,13 @@ def get_wildfire_data(conn):
 
 # Overview page
 def get_wildfire_map_points(conn, filters: Filters | None = None):
-    where_sql, params = build_filter_conditions(filters, time_column="detected_at")
+    where_sql, params = build_location_time_filter(filters, time_column="detected_at")
 
     sql = f"""
-        select
-            w.wildfire_id,
-            w.location_id,
-            l.city,
-            l.latitude,
-            l.longitude,
-            w.brightness,
-            w.frp,
-            w.detected_at,
-            s.severity_level_id,
-            s.severity_name
-        from ingestion.wildfire_data w
-        join ingestion.location l
-            on w.location_id = l.location_id
-        join ingestion.severity_level s
-            on w.severity_level_id = s.severity_level_id
+        select *
+        from ingestion.v_wildfire_events
         {where_sql}
-        order by w.detected_at desc
+        order by detected_at desc
         limit 100
     """
 
@@ -49,25 +35,13 @@ def get_wildfire_map_points(conn, filters: Filters | None = None):
 
 
 def get_latest_wildfire_events(conn, filters: Filters | None = None):
-    where_sql, params = build_filter_conditions(filters, time_column="detected_at")
+    where_sql, params = build_location_time_filter(filters, time_column="detected_at")
 
     sql = f"""
-        select
-            w.wildfire_id,
-            w.location_id,
-            l.city,
-            w.brightness,
-            w.frp,
-            w.detected_at,
-            s.severity_level_id,
-            s.severity_name
-        from ingestion.wildfire_data w
-        join ingestion.location l
-            on w.location_id = l.location_id
-        join ingestion.severity_level s
-            on w.severity_level_id = s.severity_level_id
+        select *
+        from ingestion.v_wildfire_events
         {where_sql}
-        order by w.detected_at desc
+        order by detected_at desc
         limit 10
     """
 

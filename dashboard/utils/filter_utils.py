@@ -92,3 +92,26 @@ def build_filter_conditions(filters, time_column=None):
         where_sql = " where " + " and ".join(conditions)
 
     return where_sql, params
+
+
+def build_location_time_filter(filters, time_column: str):
+    conditions = []
+    params = []
+
+    if filters and filters.location_id:
+        conditions.append("location_id = %s")
+        params.append(filters.location_id)
+
+    if time_column and filters.time_range:
+        start_time, end_time = resolve_time_range(filters.time_range)
+
+        conditions.append(f"{time_column} >= %s")
+        conditions.append(f"{time_column} <= %s")
+
+        params.extend([start_time, end_time])
+
+    where_sql = ""
+    if conditions:
+        where_sql = " where " + " and ".join(conditions)
+
+    return where_sql, params
