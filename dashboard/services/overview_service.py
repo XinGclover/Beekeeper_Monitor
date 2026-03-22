@@ -5,6 +5,7 @@ from dashboard.services.sensor_service import (
 from dashboard.services.kpi_service import build_sensor_kpis
 from dashboard.services.weather_service import get_weather_timeline
 from dashboard.services.wildfire_service import (get_latest_wildfire_events, get_wildfire_map_points)
+from dashboard.services.alarm_event_service import (get_alarm_events_latest, get_alarm_events_hourly_overview)
 from psycopg2.extras import RealDictCursor
 import pandas as pd
 
@@ -34,10 +35,10 @@ def load_overview_data(conn, filters):
             "latest": get_latest_wildfire_events(conn, filters),
             "map_points": get_wildfire_map_points(conn, filters),
         },
-        # "alarms": {
-        #     "latest": get_alarm_events(conn, filters),
-        #     "hourly": get_alarm_events_hourly(conn, filters),
-        # },
+        "alarms": {
+            "latest": get_alarm_events_latest(conn, filters),
+            "hourly": get_alarm_events_hourly_overview(conn, filters),
+        },
         # "notifications": {
         #     "latest": get_notifications_for_scope(conn, filters),
         #     "unread_count": get_unread_notification_count(conn, filters),

@@ -6,6 +6,7 @@ from dashboard.components.sensor_overview_section import render_sensor_overview_
 from dashboard.components.overview_kpis import render_kpi_row
 from dashboard.components.weather_overview_section import render_weather_overview_section
 from dashboard.components.wildfire_overview_section import render_wildfire_overview_section
+from dashboard.components.alarm_overview_section import render_alarm_overview_section
 
 def show_overview_page():
     st.title("Overview")
@@ -19,6 +20,7 @@ def show_overview_page():
 
     render_weather_overview_section(data["weather"])
     render_wildfire_overview_section(data["wildfire"])
+    render_alarm_overview_section(data["alarms"])
    
 
 show_overview_page()
