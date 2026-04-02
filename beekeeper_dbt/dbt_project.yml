@@ -4,6 +4,7 @@
 # name or the intended use of these models
 name: 'beekeeper_dbt'
 version: '1.0.0'
+config-version: 2
 
 # This setting configures which "profile" dbt uses for this project.
 profile: 'beekeeper_dbt'
@@ -31,6 +32,16 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   beekeeper_dbt:
-    # Config indicated by + and applies to all files under models/example/
-    example:
+    +schema: null
+    
+    staging:
+      +schema: staging
       +materialized: view
+
+    intermediate:
+      +schema: intermediate
+      +materialized: view
+
+    marts:
+      +schema: marts
+      +materialized: table
