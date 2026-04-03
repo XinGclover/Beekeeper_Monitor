@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: dim_metric_type
+    description: "Dimension model for metric types."
+    columns:
+    description: "Staging models for raw data transformation."
+    columns:
+      - name: metric_type_key
+        description: "Unique identifier for each record."
+        tests:
+          - unique
+          - not_null
+      - name: metric_type_id
+        description: "Unique identifier for each metric type."
+      - name: metric_type_name
+        description: "Name of the metric type."
+    
+  - name: dim_sensor
+    description: "Dimension model for sensors."
+    columns:
+      - name: sensor_key
+        description: "Unique identifier for each record."
+        tests:
+          - unique
+          - not_null
+      - name: sensor_id
+        description: "Unique identifier for each sensor."
+      - name: sensor_type
+        description: "Type of the sensor."
+      - name: is_hive_level
+        description: "Indicates if the sensor is hive-level or not."
+      - name: hive_id
+        description: "Foreign key referencing the hive of the sensor."
+      - name: hive_type
+        description: "Foreign key referencing the type of the hive."
+      - name: apiary_id
+        description: "Foreign key referencing the apiary of the sensor."
+      - name: location_id
+        description: "Foreign key referencing the location of the sensor."
+      - name: city
+        description: "City where the sensor is located."
+      - name: country
+        description: "Country where the sensor is located."
+      - name: installed_at
+        description: "Date when the sensor was installed."
+      - name: status
+        description: "Current status of the sensor (e.g., active, inactive)." 
+      - name: valid_from
+        description: "Start date of the record's validity."
+      - name: valid_to
+        description: "End date of the record's validity." 
+      - name: current_flag
+        description: "Flag indicating if the record is the current version (Y/N)."
+    
+
+      

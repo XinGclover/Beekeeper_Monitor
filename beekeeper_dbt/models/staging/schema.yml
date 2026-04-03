@@ -1,0 +1,140 @@
+version: 2
+
+models:
+
+  - name: stg_apiary
+    description: "Staging models for raw data from the apiary source."
+    columns:
+      - name: apiary_id
+        description: "Unique identifier for each apiary."
+        tests:
+          - unique
+          - not_null
+      - name: location_id
+        description: "Foreign key referencing the location of the apiary."
+      - name: amount_units
+        description: "Number of units in the apiary."
+      
+  - name: stg_location
+    description: "Staging models for raw data from the location source."
+    columns:
+      - name: location_id
+        description: "Unique identifier for each location."
+        tests:
+          - unique
+          - not_null
+      - name: country_id
+        description: "Foreign key referencing the country of the location."
+      - name: city
+        description: "City where the location is situated."
+      - name: address 
+        description: "Address of the location."
+      - name: postal_code
+        description: "Postal code of the location."
+      - name: latitude
+        description: "Latitude coordinate of the location."
+      - name: longitude
+        description: "Longitude coordinate of the location."
+  
+  - name: stg_country
+    description: "Staging models for raw data from the country source."
+    columns:
+      - name: country_id
+        description: "Unique identifier for each country."
+        tests:
+          - unique
+          - not_null
+      - name: country_name
+        description: "Name of the country."
+      - name: continent_code
+        description: "Code representing the continent of the country."
+  
+  - name: stg_hive
+    description: "Staging models for raw data from the hive source."
+    columns:
+      - name: hive_id
+        description: "Unique identifier for each hive."
+        tests:
+          - unique
+          - not_null
+      - name: apiary_id
+        description: "Foreign key referencing the apiary of the hive."
+      - name: hive_type_id
+        description: "Foreign key referencing the type of the hive."
+      - name: installed_at
+        description: "Date when the hive was installed."
+  
+  - name: stg_hive_type
+    description: "Staging models for raw data from the hive type source."
+    columns:
+      - name: hive_type_id
+        description: "Unique identifier for each hive type."
+        tests:
+          - unique
+          - not_null
+      - name: hive_type_name
+        description: "Name of the hive type."
+  
+  - name: stg_metric_type
+    description: "Staging models for raw data from the metric type source."
+    columns:
+      - name: metric_type_id
+        description: "Unique identifier for each metric type."
+        tests:
+          - unique
+          - not_null
+      - name: metric_type_name
+        description: "Name of the metric type."
+
+  - name: stg_sensor
+    description: "Staging models for raw data from the sensor source."
+    columns:
+      - name: sensor_id
+        description: "Unique identifier for each sensor."
+        tests:
+            - unique
+            - not_null
+      - name: hive_id
+        description: "Foreign key referencing the hive of the sensor."
+      - name: sensor_type_id
+        description: "Foreign key referencing the type of metric measured by the sensor."
+      - name: is_hive_level
+        description: "Boolean indicating if the sensor is measuring hive-level metrics."
+      - name: installed_at
+        description: "Date when the sensor was installed."
+      - name: status
+        description: "Current status of the sensor (e.g., active, inactive)."
+
+  - name: stg_sensor_data
+    description: "Staging models for raw data from the sensor data source."
+    columns:
+      - name: sensor_data_id
+        description: "Unique identifier for each sensor data record."
+        tests:
+          - unique
+          - not_null
+      - name: sensor_id
+        description: "Foreign key referencing the sensor that generated the data."
+      - name: measured_value
+        description: "Value measured by the sensor."
+      - name: measured_at
+        description: "Timestamp when the data was recorded."
+      - name: fetched_at
+        description: "Timestamp when the data was fetched into the staging model."
+  
+  - name: stg_sensor_type
+    description: "Staging models for raw data from the sensor type source."
+    columns:
+      - name: sensor_type_id
+        description: "Unique identifier for each sensor type."
+        tests:
+          - unique
+          - not_null
+      - name: sensor_type_name
+        description: "Name of the sensor type."
+      - name: sensor_type_unit
+        description: "Unit of measurement for the sensor type."
+
+  
+
+  
