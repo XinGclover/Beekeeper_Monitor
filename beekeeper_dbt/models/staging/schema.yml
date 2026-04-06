@@ -135,6 +135,79 @@ models:
       - name: sensor_type_unit
         description: "Unit of measurement for the sensor type."
 
-  
+  - name: stg_notification
+    description: "Staging models for raw data from the notification source."
+    columns:
+      - name: notification_id
+        description: "Unique identifier for each notification."
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        description: "Foreign key referencing the user associated with the notification."
+      - name: title
+        description: "Title of the notification."
+      - name: message
+        description: "Message content of the notification."
+      - name: created_at
+        description: "Timestamp when the notification was created."
+      - name: read_at
+        description: "Timestamp when the notification was read."
+      - name: sent_at
+        description: "Timestamp when the notification was sent."
+      - name: channel_id
+        description: "Foreign key referencing the channel through which the notification was sent."
 
-  
+  - name: stg_notification_channel
+    description: "Staging models for raw data from the notification channel source."
+    columns:
+      - name: channel_id
+        description: "Unique identifier for each notification channel."
+        tests:
+          - unique
+          - not_null
+      - name: channel_name
+        description: "Name of the notification channel."
+
+
+  - name: stg_user
+    description: "Staging models for raw data from the user source."
+    columns:
+      - name: user_id
+        description: "Unique identifier for each user."
+        tests:
+          - unique
+          - not_null
+      - name: user_name
+        description: "Username of the user."
+      - name: email
+        description: "Email address of the user."
+      - name: notifications_enabled
+        description: "Boolean indicating if the user has enabled notifications."
+      - name: last_login_at
+        description: "Timestamp of the user's last login."
+      - name: role_id
+        description: "Foreign key referencing the role of the user."        
+      
+  - name: stg_role
+    description: "Staging models for raw data from the role source."
+    columns:
+      - name: role_id
+        description: "Unique identifier for each role."
+        tests:
+          - unique
+          - not_null
+      - name: role_name
+        description: "Name of the role."  
+
+  - name: stg_severity
+    description: "Staging models for raw data from the severity level source."
+    columns:
+      - name: severity_id
+        description: "Unique identifier for each severity level."
+        tests:
+          - unique
+          - not_null
+      - name: severity_name
+        description: "Name of the severity level."
+        

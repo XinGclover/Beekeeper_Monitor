@@ -28,3 +28,5 @@ sources:
       - name: user_alarm_rule
       - name: weather_data
       - name: wildfire_data
+      - name: notification_channel
+      - name: role
