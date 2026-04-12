@@ -13,3 +13,6 @@ wheels/
 venv/
 env/
 ENV/  
+
+# dbt logs
+beekeeper_dbt/logs/

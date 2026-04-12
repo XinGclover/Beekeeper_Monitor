@@ -14,3 +14,27 @@ CREATE TABLE IF NOT EXISTS ingestion.notification (
         notification_status IN ('pending', 'sent', 'failed')
     )
 );
+
+ALTER TABLE
+    ingestion.notification
+ADD
+    COLUMN channel_id SMALLINT;
+
+UPDATE
+    ingestion.notification
+SET
+    channel_id = 1
+WHERE
+    channel_id IS NULL;
+
+ALTER TABLE
+    ingestion.notification
+ALTER COLUMN
+    channel_id
+SET
+    NOT NULL;
+
+ALTER TABLE
+    ingestion.notification
+ADD
+    CONSTRAINT fk_notification_channel FOREIGN KEY (channel_id) REFERENCES ingestion.notification_channel(channel_id);

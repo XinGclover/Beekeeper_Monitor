@@ -1,0 +1,32 @@
+version: 2
+
+sources:
+  - name: ingestion
+    description: "Raw data from ingestion layer (OLTP tables)"
+    schema: ingestion
+
+    tables:
+      - name: alarm_event
+      - name: alarm_rule
+      - name: alarm_rule_target
+      - name: apiary
+      - name: apiary_environment
+      - name: country
+      - name: external_source
+      - name: hive_type
+      - name: hives
+      - name: location
+      - name: metric_type
+      - name: notification
+      - name: scraping_job
+      - name: sensor
+      - name: sensor_data
+      - name: sensor_type
+      - name: severity_level
+      - name: target_type
+      - name: user
+      - name: user_alarm_rule
+      - name: weather_data
+      - name: wildfire_data
+      - name: notification_channel
+      - name: role

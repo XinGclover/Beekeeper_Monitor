@@ -8,3 +8,11 @@ create table if not exists ingestion.user (
     notifications_enabled BOOLEAN NOT NULL DEFAULT TRUE,
     last_login_at TIMESTAMP NULL
 );
+
+ALTER TABLE ingestion."user"
+ADD COLUMN role_id SMALLINT;
+
+ALTER TABLE ingestion."user"
+ADD CONSTRAINT fk_user_role
+FOREIGN KEY (role_id)
+REFERENCES ingestion.role(role_id);

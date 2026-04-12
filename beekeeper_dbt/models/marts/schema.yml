@@ -1,0 +1,26 @@
+Version: 2
+
+models:
+  - name: fact_sensor_measurements
+    description: "Fact model for sensor measurements."
+    columns:
+      - name: measurement_key
+        description: "Unique identifier for each record."
+        tests:
+          - unique
+          - not_null
+      - name: sensor_key
+        description: "Foreign key referencing the sensor dimension."
+        tests:
+          - not_null
+      - name: date_key
+        description: "Foreign key referencing the date dimension."
+        tests:
+          - not_null
+      - name: time_key
+        description: "Foreign key referencing the time dimension."
+      - name: measured_value
+        description: "The value measured by the sensor."
+
+
+      
