@@ -4,7 +4,7 @@ with severity as (
 )
 
 select
-    {{ dbt_utils.generate_surrogate_key(['severity_id']) }} as severity_key,
+    severity_id as severity_key,
     severity_id,
     severity_name
 from severity
