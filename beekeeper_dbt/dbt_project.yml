@@ -45,3 +45,7 @@ models:
     marts:
       +schema: marts
       +materialized: table
+
+snapshots:
+  beekeeper_dbt:
+    +target_schema: snapshots

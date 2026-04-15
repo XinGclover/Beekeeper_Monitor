@@ -12,7 +12,6 @@ select
     extract(minute from time '00:00:00' + second_of_day * interval '1 second')::int as minute,
     extract(second from time '00:00:00' + second_of_day * interval '1 second')::int as second,
 
-    floor(second_of_day / 3600)::int as hour_of_day,
     floor(second_of_day / 60)::int as minute_of_day,
 
     case

@@ -4,7 +4,7 @@ with types as (
 )
 
 select
-    {{ dbt_utils.generate_surrogate_key(['metric_type_id']) }} as metric_type_key,
+    metric_type_id as metric_type_key,
     metric_type_id,
     metric_type_name
 from types
