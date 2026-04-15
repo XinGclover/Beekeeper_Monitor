@@ -1,84 +1,105 @@
 import streamlit as st
 import pandas as pd
+import requests
 
-from core.db import get_db_conn
-from dashboard.services.sensor_service import get_sensor_history,get_latest_sensor_data,get_sensor_data_timeline
+API_BASE_URL = "http://localhost:8000"
+
+
+def fetch_json(path: str, params: dict | None = None):
+    url = f"{API_BASE_URL}{path}"
+    response = requests.get(url, params=params, timeout=30)
+    response.raise_for_status()
+    return response.json()
 
 st.title("Sensor")
 
-conn = get_db_conn()
 
 try:
     # -------- live sensor values --------
 
     st.subheader("Current sensor status")
 
-    latest = get_latest_sensor_data(conn)
+    latest = fetch_json("/api/monitoring/sensors/latest")
 
     if latest:
         df_latest = pd.DataFrame(latest)
         st.dataframe(df_latest)
+    else:
+        df_latest = pd.DataFrame()
+        st.info("No latest sensor data found.")
 
     st.subheader("Sensor Data Timeline")
 
-    selected_sensor_id = st.selectbox(
-        "Choose sensor",
-        options=df_latest["sensor_id"],
-        format_func=lambda x: f"Sensor {x}"
-    )
-
-    timeline = get_sensor_data_timeline(conn, sensor_id=selected_sensor_id)
-
-    if timeline:
-        df_timeline = pd.DataFrame(timeline)
-
-        df_timeline["measured_at"] = pd.to_datetime(df_timeline["measured_at"])
-        df_timeline["measurement"] = pd.to_numeric(
-            df_timeline["measurement"],
-            errors="coerce"
-        ).astype(float)
-
-        # senaste 1 timme
-        hours = st.slider("Time window (hours)", 1, 24, 1)
-
-        cutoff = pd.Timestamp.now() - pd.Timedelta(hours=hours)
-
-        df_recent = df_timeline[df_timeline["measured_at"] >= cutoff]
-
-        chart_df = (
-            df_recent[["measured_at", "measurement"]]
-            .dropna()
-            .sort_values("measured_at")
-            .set_index("measured_at")
+    if df_latest.empty:
+        st.info("No sensors available.")
+    else:
+        selected_sensor_id = st.selectbox(
+            "Choose sensor",
+            options=df_latest["sensor_id"],
+            format_func=lambda x: f"Sensor {x}"
         )
 
-        st.dataframe(chart_df)
-        st.line_chart(chart_df)
-    else:
-        st.info("No sensor timeline found.")
-    # -------- sensor history --------
+        # -------- sensor timeline --------
 
-    st.subheader("Sensor history")
+        timeline = fetch_json(
+            "/api/monitoring/sensors/timeline",
+            params={"sensor_id": selected_sensor_id},
+        )
 
-    history = get_sensor_history(conn)
+        if timeline:
+            df_timeline = pd.DataFrame(timeline)
 
-    if not history:
-        st.info("No sensor data yet.")
+            df_timeline["measured_at"] = pd.to_datetime(df_timeline["measured_at"])
+            df_timeline["measurement"] = pd.to_numeric(
+                df_timeline["measurement"],
+                errors="coerce"
+            ).astype(float)
 
-    df = pd.DataFrame(history)
+            # senaste 1 timme
+            hours = st.slider("Time window (hours)", 1, 24, 1)
 
-    sensor_ids = df["sensor_id"].unique()
-    selected_sensor = st.selectbox("Select sensor", sensor_ids)
+            cutoff = pd.Timestamp.now() - pd.Timedelta(hours=hours)
 
-    df = df[df["sensor_id"] == selected_sensor]
-    df["period_date"] = pd.to_datetime(df["period_date"])
-    df["measurement_avg"] = pd.to_numeric(df["measurement_avg"], errors="coerce").astype(float)
+            df_recent = df_timeline[df_timeline["measured_at"] >= cutoff]
 
-    st.line_chart(
-        df.set_index("period_date")["measurement_avg"]
-    )
+            chart_df = (
+                df_recent[["measured_at", "measurement"]]
+                .dropna()
+                .sort_values("measured_at")
+                .set_index("measured_at")
+            )
 
-    st.dataframe(df)
+            st.dataframe(chart_df)
+            st.line_chart(chart_df)
+        else:
+            st.info("No sensor timeline found.")
 
-finally:
-    conn.close()
+        # -------- sensor history --------
+
+        st.subheader("Sensor history")
+
+        history = fetch_json(
+            "/api/monitoring/sensors/history",
+            params={"sensor_id": selected_sensor_id},
+        )
+
+        if not history:
+            st.info("No sensor data yet.")
+        else:
+            df_history = pd.DataFrame(history)
+            
+            df_history["period_date"] = pd.to_datetime(df_history["period_date"])
+            df_history["measurement_avg"] = pd.to_numeric(
+                df_history["measurement_avg"], 
+                errors="coerce").astype(float)
+
+            st.line_chart(
+                df_history.set_index("period_date")["measurement_avg"]
+            )
+
+            st.dataframe(df_history)
+
+except requests.RequestException as exc:
+    st.error(f"API request failed: {exc}")
+except Exception as exc:
+    st.error(f"Unexpected error: {exc}")
