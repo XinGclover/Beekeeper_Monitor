@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+
+load_dotenv(".env")
+
 import streamlit as st
 import sys
 from pathlib import Path
