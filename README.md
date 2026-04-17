@@ -16,6 +16,72 @@ It integrates heterogeneous data sources (weather APIs, IoT sensor streams, wild
 
 ---
 
+## 🧪 Quick Start (Live Demo)
+
+Run the full system locally (data pipelines + rule engine):
+
+~~~bash
+git clone https://github.com/XinGclover/Beekeeper_Monitor.git
+cd beekeeper-monitor
+
+uv sync
+bash run_live_demo.sh
+~~~
+
+This script will start:
+
+- Sensor data simulator  
+- Weather ingestion pipeline (loop)  
+- Wildfire ingestion pipeline (loop)  
+- Rule engine  
+
+---
+
+## 🖥️ Start Dashboard
+
+~~~bash
+uv run streamlit run dashboard/app.py
+~~~
+
+Open in browser:
+
+- http://localhost:8501  
+
+---
+
+## ⚙️ Manual Setup (Optional)
+
+If you prefer to run components individually:
+
+### Run API
+
+~~~bash
+uv run uvicorn api.main:app --reload
+~~~
+
+API endpoints:
+
+- API: http://localhost:8000  
+- Docs: http://localhost:8000/docs  
+
+### Run Pipelines Separately
+
+~~~bash
+uv run python ingestion/weather/pipeline.py
+uv run python ingestion/wildfire/pipeline.py
+uv run python ingestion/sensor/simulator.py
+~~~
+
+---
+
+## 📌 Notes
+
+- Make sure your `.env` file is configured with `DATABASE_URL`  
+- If using a cloud API, update `API_BASE_URL`  
+- `run_live_demo.sh` starts multiple background jobs  
+
+---
+
 ## 🧱 Architecture Overview
 
 ```mermaid
