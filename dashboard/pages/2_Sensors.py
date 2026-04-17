@@ -1,9 +1,12 @@
 import streamlit as st
 import pandas as pd
+import os
+from dotenv import load_dotenv
 import requests
 
-API_BASE_URL = "http://localhost:8000"
+load_dotenv()
 
+API_BASE_URL = os.getenv("API_BASE_URL")
 
 def fetch_json(path: str, params: dict | None = None):
     url = f"{API_BASE_URL}{path}"
