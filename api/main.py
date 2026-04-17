@@ -8,3 +8,11 @@ from api.routers.monitoring_sensors import router as monitoring_sensors_router
 app = FastAPI(title="Beekeeper Monitoring API")
 
 app.include_router(monitoring_sensors_router)
+
+@app.get("/")
+def root():
+    return {"message": "Beekeeper Monitoring API is running"}
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
