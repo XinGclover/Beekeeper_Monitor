@@ -1,152 +1,292 @@
-# 🐝 Beekeeper Monitor – Environmental Monitoring Data Platform 🍯
+# 🐝 Beekeeper Monitor – Production-Style Data Engineering Platform 🍯
 
-**Beekeeper Monitor** is a full-stack data engineering project designed to simulate a real-world environmental monitoring system for beekeeping operations.
+**Beekeeper Monitor** is a full-stack data engineering platform that simulates a real-world environmental monitoring system for beekeeping operations.
 
-The platform integrates data from multiple external sources—including weather forecasts, in-hive sensors, and wildfire alerts—and transforms them into actionable insights through a rule-based alerting system and interactive dashboards.
+It integrates heterogeneous data sources (weather APIs, IoT sensor streams, wildfire datasets) and transforms them into actionable insights through a rule-based alerting engine, analytical modeling, and an interactive dashboard.
 
-*This project was developed as part of a higher vocational program focused on data modeling and system design, with an emphasis on building a realistic end-to-end data pipeline.*
-> 🎯 **Goal:** Enable proactive risk detection (e.g., overheating hives, humidity imbalance, wildfire threats) to support data-driven decision-making for beekeepers.
+> 🎯 **Goal:** Enable proactive risk detection (e.g., overheating hives, humidity imbalance, wildfire threats)
+> 💡 Designed as a **production-style data platform** with decoupled services, API-first architecture, and analytical modeling (dbt)
+
+---
+
+## 🚀 Live Demo
+
+* **Streamlit App:**
+  https://beekeepermonitor-demo.streamlit.app
+
+---
+
+## 🧱 Architecture Overview
+
+```mermaid
+flowchart TD
+    A[External Data Sources] --> B[Ingestion Pipelines]
+    B --> C[(PostgreSQL OLTP)]
+    C --> D[dbt Transformations]
+    D --> E[(Analytics Layer - Star Schema)]
+    C --> F[Rule Engine]
+    F --> G[Alarm Events]
+    C --> H[FastAPI Backend]
+    H --> I[Streamlit Dashboard]
+```
+
+---
+
+## ☁️ Cloud Architecture
+
+```text
+Streamlit Cloud (Frontend)
+        ↓
+Render (FastAPI Backend API)
+        ↓
+Neon (PostgreSQL - OLTP + Analytics Storage)
+```
+
+### Key Design Decisions
+
+* Frontend does **not** connect directly to the database
+* All data access goes through a **REST API layer**
+* Backend and frontend are **independently deployable**
+* Environment variables are used for configuration (`API_BASE_URL`)
+
+---
+
+## 🔄 End-to-End Data Flow
+
+1. **Data Ingestion**
+
+   * External APIs (SMHI, NASA FIRMS)
+   * Simulated IoT sensor data
+   * Stored in PostgreSQL (OLTP layer)
+
+2. **Processing**
+
+   * Rule engine evaluates incoming data
+   * Generates alarm events when thresholds are exceeded
+
+3. **Transformation**
+
+   * dbt models transform OLTP → Star Schema (OLAP)
+   * Snapshots track historical changes (SCD Type 2)
+
+4. **Serving Layer**
+
+   * FastAPI exposes REST endpoints
+   * Streamlit consumes API for visualization
 
 ---
 
 ## 🧠 Key Features
 
-- 📡 **Multi-source data ingestion**
-  - Weather forecasts (SMHI API)
-  - Hive sensor measurements (simulated IoT data)
-  - Wildfire risk data
+### 🔄 Multi-source ingestion
 
-- ⚙️ **Automated data pipelines**
-  - Python-based ingestion jobs
-  - Scheduled data collection and processing
+* Weather forecasts (SMHI API)
+* Hive sensor measurements (simulated IoT data)
+* Wildfire risk data
 
-- 🧩 **Rule-based alert engine**
-  - Configurable thresholds (temperature, humidity, fire risk)
-  - Real-time anomaly detection
-  - Alarm event generation
+### ⚙️ Automated pipelines
 
-- 📊 **Analytics-first architecture**
-  - SQL views as the core analytical layer
-  - Pre-aggregated data for efficient querying
+* Python-based ingestion jobs
+* Scheduled data collection
+* Job tracking & monitoring
 
-- 🖥️ **Interactive monitoring dashboard**
-  - Built with Streamlit
-  - Hierarchical filtering:  
-    `location → apiary → hive → sensor`
+### 🚨 Rule-based alert engine
 
----
+* Configurable thresholds (temperature, humidity, wildfire)
+* Real-time anomaly detection
+* Alarm event generation
 
-## 🏗️ System Overview
+### 📊 SQL-first analytics
 
-The system follows a layered architecture:
+* SQL views for operational queries
+* dbt transformation layer
+* Star schema for analytical workloads
 
-### 1. External Data Sources
-- Weather forecasts (SMHI Weather API)
-- Environmental sensors in beehives
-- Wildfire risk data
+### 🖥️ Interactive dashboard
 
-### 2. Data Ingestion Layer
-Python pipelines retrieve, transform, and load data into PostgreSQL.
+* Built with Streamlit
+* Real-time + historical monitoring
+* Hierarchical filtering:
 
-- Handles API integration and parsing  
-- Ensures data consistency via upsert logic  
-- Tracks ingestion jobs and statuses  
-
-### 3. Data Storage Layer (PostgreSQL)
-
-Stores structured data including:
-
-- Locations and apiaries  
-- Sensor measurements  
-- Weather and wildfire data  
-- Alarm rules and events  
-- Scraping job metadata  
-
-> 💡 Analytical logic is implemented using SQL views (`db/views`), keeping Python lightweight.
+  * location → apiary → hive → sensor
 
 ---
 
-### 4. Processing & Rule Engine
+## 🗄️ Data Platform Design
 
-The rule engine evaluates incoming data against predefined conditions:
+### OLTP Layer (PostgreSQL)
 
-- Temperature thresholds  
-- Humidity levels  
-- Wildfire severity indicators  
+Stores:
 
-When conditions are met:
-- Alarm events are generated  
-- Contextual metadata is stored  
-
----
-
-### 5. Monitoring & Analytics Layer
-
-A Streamlit dashboard provides:
-
-- Real-time monitoring  
-- Historical trend analysis  
-- Alert tracking  
-- Flexible filtering across system hierarchy  
+* Sensor measurements (time-series)
+* Weather & wildfire data
+* Alarm rules & events
+* Metadata (location, apiary, hive)
 
 ---
 
-## 🌦️ Example: Weather Data Pipeline
+### 📊 OLAP Layer (dbt – Star Schema)
 
-The weather ingestion pipeline performs:
+#### Fact Tables
 
-1. Create a scraping job record  
-2. Fetch forecast data from SMHI API  
-3. Parse and normalize response  
-4. Store observations in PostgreSQL  
-5. Update job status  
+* `fact_sensor_measurements`
+* `fact_alarm_events`
 
-To prevent duplicates:
+#### Dimension Tables
 
-- Unique constraint on `(location_id, valid_time)`  
-- UPSERT logic  
-
----
-
-## 🧱 Architecture Summary
-
-- **External Sources** → APIs & sensors  
-- **Ingestion Layer** → Python pipelines  
-- **Storage Layer** → PostgreSQL (tables + views)  
-- **Processing Layer** → Rule engine  
-- **Presentation Layer** → Streamlit dashboard  
+* `dim_sensor`
+* `dim_hive`
+* `dim_apiary`
+* `dim_date`
+* `dim_time`
+* `dim_metric_type`
+* `dim_alarm_rule`
+* `dim_severity`
+* `dim_user`
 
 ---
 
-## 🛠️ Technologies
+### 🕒 Slowly Changing Dimensions (SCD)
 
-- Python  
-- PostgreSQL  
-- SQL  
-- REST APIs  
-- psycopg2  
-- python-dotenv  
-- Streamlit  
+Implemented via dbt snapshots:
+
+* `sn_sensor`
+* `sn_hive`
+* `sn_apiary`
+* `sn_user`
+
+Supports:
+
+* Historical tracking
+* `valid_from`, `valid_to`, `is_current`
+
+---
+
+## ⚙️ Rule Engine Design
+
+The rule engine evaluates incoming data against thresholds:
+
+* Temperature
+* Humidity
+* Wildfire severity
+
+### Output
+
+* Alarm events
+* Context-aware metadata (sensor, hive, location)
+
+---
+
+## 🌐 API Layer (FastAPI)
+
+### Example Endpoints
+
+* `/api/monitoring/sensors/latest`
+* `/api/monitoring/sensors/history`
+
+### Why API-first?
+
+* Decouples frontend & database
+* Improves security
+* Enables multi-client access (BI tools, dashboards, services)
+
+---
+
+## 🖥️ Dashboard (Streamlit)
+
+Features:
+
+* Real-time monitoring
+* Historical trends
+* Alert inspection
+* Multi-level filtering
+
+---
+
+## 🛠️ Tech Stack
+
+### Data Engineering
+
+* Python
+* PostgreSQL
+* SQL
+* dbt
+
+### Backend
+
+* FastAPI
+* REST API
+* psycopg2
+
+### Frontend
+
+* Streamlit
+
+### Cloud
+
+* Streamlit Cloud
+* Render
+* Neon (serverless PostgreSQL)
 
 ---
 
 ## 📦 Repository Structure
 
-The repository is organized into a few main modules:
+```
+ingestion/        # Data ingestion pipelines
+rule_engine/      # Alert evaluation logic
+api/              # FastAPI backend
+dashboard/        # Streamlit frontend
+beekeeper_dbt/    # dbt models & snapshots
+db/               # SQL schemas & views
+notification/     # Alert delivery logic
+```
 
-- **ingestion/**  
-  Data ingestion pipelines for sensors, weather, and wildfire data.
+---
 
-- **rule_engine/**  
-  Processes incoming data and evaluates alarm rules.
+## ⚖️ Design Trade-offs
 
-- **dashboard/**  
-  Streamlit application for monitoring, filtering, and visualization.
+### Why REST API instead of direct DB access?
 
-- **db/**  
-  Database layer including table definitions, views, and seed data.
+* ✔ Better security (no DB exposure)
+* ✔ Clear separation of concerns
+* ✔ Easier scaling (multiple clients)
 
-- **notification/**  
-  Handles alert delivery (extensible component).
+---
 
-> For full details, please refer to the repository structure in GitHub.
+### Why OLTP + dbt instead of separate data warehouse?
+
+* ✔ Simpler architecture for a small system
+* ✔ Lower cost (Neon serverless)
+* ✔ dbt provides analytical layer without extra infra
+
+---
+
+### Why Streamlit instead of BI tools?
+
+* ✔ Full control over UI
+* ✔ Easy integration with Python
+* ✔ Fast iteration for prototypes
+
+---
+
+## 📈 Scalability & Future Improvements
+
+* Introduce **Kafka** for streaming ingestion
+* Add **real-time processing (Spark / Flink)**
+* Connect dashboard directly to **dbt marts**
+* Add **role-based access control (RBAC)**
+* Integrate **ML-based anomaly detection**
+
+---
+
+## 🎯 What This Project Demonstrates
+
+* End-to-end data platform design
+* OLTP → OLAP transformation (dbt)
+* API-first architecture
+* Real-time + analytical workloads
+* Data modeling (Star Schema + SCD)
+* Production-style system thinking
+
+---
