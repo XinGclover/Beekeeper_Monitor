@@ -10,6 +10,9 @@ wheels/
 .venv
 
 .env
+.env.local
+.env.neon
+
 venv/
 env/
 ENV/  
@@ -18,3 +21,10 @@ ENV/
 beekeeper_dbt/logs/
 
 logs
+
+db_dump/
+*.dump
+
+# macOS system files
+.DS_Store
+**/.DS_Store
