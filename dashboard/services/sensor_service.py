@@ -1,6 +1,5 @@
 from psycopg2.extras import RealDictCursor
 from dashboard.utils.filter_utils import Filters, build_filter_conditions
-import pandas as pd
 
 
 def get_latest_sensor_data(conn):
