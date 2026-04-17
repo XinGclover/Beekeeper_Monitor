@@ -6,7 +6,11 @@ import requests
 
 load_dotenv()
 
-API_BASE_URL = os.getenv("API_BASE_URL")
+API_BASE_URL = os.getenv("API_BASE_URL") or st.secrets.get("API_BASE_URL")
+
+if not API_BASE_URL:
+    st.error("Missing API_BASE_URL")
+    st.stop()
 
 def fetch_json(path: str, params: dict | None = None):
     url = f"{API_BASE_URL}{path}"
