@@ -1,21 +1,28 @@
 import streamlit as st
 import pandas as pd
 
-from dashboard.utils.api_client import fetch_json
+from dashboard.utils.api_client import get_json, post_json, wait_for_backend
 from dashboard.utils.date_utils import parse_datetime_fields
 
 st.title("Alarm Events & Notifications")
+
+with st.spinner("Waking up backend..."):
+    ready = wait_for_backend()
+
+if not ready:
+    st.warning("Backend still sleeping. Try again soon.")
+    st.stop()
 
 tab1, tab2 = st.tabs(["Alarm Events", "Notifications"])
 
 with tab1:
     st.subheader("Latest alarm events")
-    alarm_data = fetch_json("/api/monitoring/alarms")
+    alarm_data = get_json("/api/monitoring/alarms")
     df_alarm = pd.DataFrame(alarm_data)
     st.dataframe(df_alarm)
 
     st.subheader("Hourly Alarm Events")
-    alarm_hourly_data =fetch_json("/api/monitoring/alarms/hourly")
+    alarm_hourly_data =get_json("/api/monitoring/alarms/hourly")
     df_alarm_hourly = pd.DataFrame(alarm_hourly_data)
     st.line_chart(
     df_alarm_hourly,
@@ -25,7 +32,7 @@ with tab1:
 
 with tab2:
     st.subheader("Latest notifications")
-    users = fetch_json("/api/monitoring/notifications/users")
+    users = get_json("/api/monitoring/notifications/users")
 
     if not users:
         st.info("No users found.")
@@ -34,12 +41,12 @@ with tab2:
     selected_label = st.selectbox("Select user", list(user_options.keys()))
     selected_user_id = user_options[selected_label]
 
-    unread_notifications = fetch_json(
+    unread_notifications = get_json(
         f"/api/monitoring/notifications/user/{selected_user_id}/unread"
     )
     unread_notifications = parse_datetime_fields(unread_notifications, ["created_at", "read_at"])
 
-    all_notifications = fetch_json(
+    all_notifications = get_json(
         f"/api/monitoring/notifications/user/{selected_user_id}"
     )
     all_notifications = parse_datetime_fields(all_notifications, ["created_at", "read_at"])
@@ -112,7 +119,7 @@ with tab2:
         with col4:
             if is_unread:
                 if st.button("Mark read", key=f"mark_read_{n['notification_id']}"):
-                    fetch_json(
+                    post_json(
                         f"/api/monitoring/notifications/{n['notification_id']}/read",
                         method="POST"
                     )

@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
-from dashboard.utils.api_client import fetch_json
+from dashboard.utils.api_client import get_json
 
 st.title("Sensor")
 
@@ -10,7 +10,7 @@ try:
 
     st.subheader("Current sensor status")
 
-    latest = fetch_json("/api/monitoring/sensors/latest")
+    latest = get_json("/api/monitoring/sensors/latest")
 
     if latest:
         df_latest = pd.DataFrame(latest)
@@ -32,7 +32,7 @@ try:
 
         # -------- sensor timeline --------
 
-        timeline = fetch_json(
+        timeline = get_json(
             "/api/monitoring/sensors/timeline",
             params={"sensor_id": selected_sensor_id},
         )
@@ -69,7 +69,7 @@ try:
 
         st.subheader("Sensor history")
 
-        history = fetch_json(
+        history = get_json(
             "/api/monitoring/sensors/history",
             params={"sensor_id": selected_sensor_id},
         )

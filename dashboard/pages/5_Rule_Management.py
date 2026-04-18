@@ -1,14 +1,20 @@
 import streamlit as st
 import pandas as pd
 from decimal import Decimal
-from dashboard.utils.api_client import fetch_json
+from dashboard.utils.api_client import get_json, post_json, wait_for_backend
 
 st.set_page_config(page_title="Rule Management", layout="wide")
 st.title("Rule Management")
 
+with st.spinner("Waking up backend..."):
+    ready = wait_for_backend()
+
+if not ready:
+    st.warning("Backend still sleeping. Try again soon.")
+    st.stop()
 
 def load_rules_df() -> pd.DataFrame:
-    rows = fetch_json("/api/monitoring/alarm-rules")
+    rows = get_json("/api/monitoring/alarm-rules")
     return pd.DataFrame(rows)
     
 
@@ -77,7 +83,7 @@ with col1:
         else:
             try:
                 for row in changed_rows:
-                    fetch_json(
+                    post_json(
                         f"/api/monitoring/alarm-rules/{row['rule_id']}",
                         method="POST",
                         json={
