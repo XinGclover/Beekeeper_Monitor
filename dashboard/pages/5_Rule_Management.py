@@ -1,25 +1,16 @@
 import streamlit as st
 import pandas as pd
 from decimal import Decimal
-
-from core.db import get_db_conn
-from dashboard.services.rule_management_service import (
-    fetch_alarm_rules,
-    update_alarm_rule
-)
+from dashboard.utils.api_client import fetch_json
 
 st.set_page_config(page_title="Rule Management", layout="wide")
 st.title("Rule Management")
 
 
 def load_rules_df() -> pd.DataFrame:
-    conn = get_db_conn()
-    try:
-        rows = fetch_alarm_rules(conn)
-        df = pd.DataFrame(rows)
-        return df
-    finally:
-        conn.close()
+    rows = fetch_json("/api/monitoring/alarm-rules")
+    return pd.DataFrame(rows)
+    
 
 
 def normalize_decimal(value) -> Decimal:
@@ -65,7 +56,7 @@ edited_df = st.data_editor(
 col1, col2 = st.columns([1, 6])
 
 with col1:
-    if st.button("Save changes", width='stretch'):
+    if st.button("Save changes", width="stretch", key="save_rules"):
         changed_rows = []
 
         for i in range(len(df)):
@@ -84,27 +75,24 @@ with col1:
         if not changed_rows:
             st.info("No changes to save.")
         else:
-            conn = get_db_conn()
             try:
                 for row in changed_rows:
-                    update_alarm_rule(
-                        conn=conn,
-                        rule_id=row["rule_id"],
-                        threshold=row["threshold"],
-                        is_active=row["is_active"],
+                    fetch_json(
+                        f"/api/monitoring/alarm-rules/{row['rule_id']}",
+                        method="POST",
+                        json={
+                            "threshold": float(row["threshold"]),
+                            "is_active": bool(row["is_active"]),
+                        },
                     )
 
-                conn.commit()
                 st.success(f"Updated {len(changed_rows)} rule(s).")
                 st.rerun()
 
             except Exception as e:
-                conn.rollback()
                 st.error(f"Update failed: {e}")
 
-            finally:
-                conn.close()
 
 with col2:
-    if st.button("Refresh", width='content'):
+    if st.button("Refresh", width="content", key="refresh_rules"):
         st.rerun()

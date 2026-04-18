@@ -1,5 +1,4 @@
 import requests
-import streamlit as st
 from dashboard.utils.config import get_api_base_url
 
 
