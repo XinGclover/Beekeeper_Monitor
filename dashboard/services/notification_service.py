@@ -2,17 +2,16 @@ from psycopg2.extras import RealDictCursor
 from dashboard.utils.filter_utils import Filters, build_filter_conditions
 
 
-def get_notifications(conn):
-
+def get_notifications(conn, limit=100, offset=0):
     sql = """
-    SELECT *
-    FROM ingestion.notification
-    ORDER BY created_at DESC
-    LIMIT 100
+        SELECT *
+        FROM ingestion.notification
+        ORDER BY created_at DESC
+        LIMIT %s OFFSET %s
     """
 
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute(sql)
+        cur.execute(sql, (limit, offset))
         return cur.fetchall()
     
 

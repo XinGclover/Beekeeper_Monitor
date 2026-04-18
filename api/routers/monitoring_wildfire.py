@@ -25,8 +25,8 @@ def read_wildfire_data(
 ):
     return get_wildfire_data(conn, limit=limit, offset=offset)
 
-
-@router.get("/map")
+# Overview page
+@router.get("/overview/map")
 def read_wildfire_map_points(
     location_id: Optional[int] = Query(default=None),
     time_range: Optional[str] = Query(default="24 Hours"),
@@ -39,7 +39,7 @@ def read_wildfire_map_points(
     return get_wildfire_map_points(conn, filters=filters)
 
 
-@router.get("/latest")
+@router.get("/overview/latest")
 def read_latest_wildfire_events(
     location_id: Optional[int] = Query(default=None),
     time_range: Optional[str] = Query(default="24 Hours"),

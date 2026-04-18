@@ -25,8 +25,9 @@ def read_weather_data(
     return get_weather_data(conn, limit=limit, offset=offset)
 
 
-@router.get("/timeline")
-def read_weather_timeline(
+# Overview page
+@router.get("/overview/timeline")
+def read_weather_timeline_overview(
     location_id: Optional[int] = Query(default=None),
     time_range: Optional[str] = Query(default="24 Hours"),
     conn: connection = Depends(get_db_connection),

@@ -1,26 +1,10 @@
-import os
-
 import pandas as pd
 import plotly.express as px
-import requests
 import streamlit as st
-from dotenv import load_dotenv
 
 from dashboard.utils.ui import get_risk_color
+from dashboard.utils.api_client import fetch_json
 
-load_dotenv()
-
-API_BASE_URL = os.getenv("API_BASE_URL") or st.secrets.get("API_BASE_URL")
-
-if not API_BASE_URL:
-    st.error("Missing API_BASE_URL")
-    st.stop()
-
-def fetch_json(path: str, params: dict | None = None):
-    url = f"{API_BASE_URL}{path}"
-    response = requests.get(url, params=params, timeout=30)
-    response.raise_for_status()
-    return response.json()
 
 # avoid Streamlit reruning scripts all the time, so you can do:
 @st.cache_data
