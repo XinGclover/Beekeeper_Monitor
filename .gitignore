@@ -11,7 +11,11 @@ wheels/
 
 .env
 .env.local
-.env.neon
+.env.cloud
+.env.frontend.local
+.env.frontend.cloud
+.env.backend.local
+.env.backend.cloud
 
 venv/
 env/

@@ -12,6 +12,9 @@ import os
 
 FIRMS_API_KEY = os.getenv("FIRMS_API_KEY")
 
+if not FIRMS_API_KEY:
+    raise ValueError("Missing FIRMS_API_KEY")
+
 SWEDEN_BBOX = "10,55,25,70"
 
 

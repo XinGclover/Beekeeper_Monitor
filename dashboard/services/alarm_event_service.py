@@ -3,30 +3,29 @@ from psycopg2.extras import RealDictCursor
 from dashboard.utils.filter_utils import Filters, build_filter_conditions
 
 
-def get_alarm_events(conn):
-
+def get_alarm_events(conn, limit=100, offset=0):
     sql = """
-    SELECT *
-    FROM ingestion.alarm_event
-    ORDER BY triggered_at DESC
-    LIMIT 100
+        SELECT *
+        FROM ingestion.alarm_event
+        ORDER BY triggered_at DESC
+        LIMIT %s OFFSET %s
     """
 
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute(sql)
+        cur.execute(sql, (limit, offset))
         return cur.fetchall()
     
 
-def get_alarm_events_hourly(conn):
-  
+def get_alarm_events_hourly(conn, limit=100):
     sql = """
-    SELECT *
-    FROM ingestion.v_alarm_event_hourly
-    LIMIT 100
+        SELECT *
+        FROM ingestion.v_alarm_event_hourly
+        ORDER BY hour DESC
+        LIMIT %s
     """
 
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute(sql)
+        cur.execute(sql, (limit,))
         return cur.fetchall()
     
 # overview page

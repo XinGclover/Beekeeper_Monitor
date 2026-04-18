@@ -6,10 +6,13 @@ import requests
 
 from ingestion.weather.models import WeatherObservation
 
-SMHI_FORECAST_URL = (
-    "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/"
-    "geotype/point/lon/{lon}/lat/{lat}/data.json"
-)
+BASE_URL = "https://opendata-download-metfcst.smhi.se/api"
+
+def build_forecast_url(lon: float, lat: float) -> str:
+    return (
+        f"{BASE_URL}/category/pmp3g/version/2/"
+        f"geotype/point/lon/{lon}/lat/{lat}/data.json"
+    )
 
 REQUEST_TIMEOUT = 20
 
@@ -21,7 +24,7 @@ def get_param(parameters, name):
 
 
 def fetch_smhi_forecast(lat: float, lon: float) -> dict[str, Any]:
-    url = SMHI_FORECAST_URL.format(lat=lat, lon=lon)
+    url = build_forecast_url(lon, lat)
     response = requests.get(url, timeout=REQUEST_TIMEOUT)
     response.raise_for_status()
     return response.json()
