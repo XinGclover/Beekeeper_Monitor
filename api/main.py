@@ -1,7 +1,4 @@
-from dotenv import load_dotenv
-
-load_dotenv()
-
+import os
 from fastapi import FastAPI
 from api.routers.monitoring_sensors import router as monitoring_sensors_router
 from api.routers.monitoring_weather import router as monitoring_weather_router
@@ -27,4 +24,8 @@ def root():
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "env": os.getenv("ENV", "unknown"),
+        "host": os.getenv("HOSTNAME", "local")
+    }

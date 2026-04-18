@@ -1,9 +1,16 @@
 import streamlit as st
 import pandas as pd
 import requests
-from dashboard.utils.api_client import get_json
+from dashboard.utils.api_client import get_json, wait_for_backend
 
 st.title("Sensor")
+
+with st.spinner("Waking up backend..."):
+    ready = wait_for_backend()
+
+if not ready:
+    st.warning("Backend still sleeping. Try again soon.")
+    st.stop()
 
 try:
     # -------- live sensor values --------

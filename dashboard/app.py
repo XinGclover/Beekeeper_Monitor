@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 
-load_dotenv(".env")
+load_dotenv()
 
 import streamlit as st
 import sys
