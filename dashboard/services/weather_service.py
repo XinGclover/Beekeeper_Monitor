@@ -1,19 +1,19 @@
 from psycopg2.extras import RealDictCursor
-from dashboard.utils.filter_utils import Filters, build_location_time_filter
+from dashboard.utils.filter_utils import build_location_time_filter
 
 
-def get_weather_data(conn):
-
+def get_weather_data(conn, limit=100, offset=0):
     sql = """
-    SELECT *
-    FROM ingestion.weather_data
-    ORDER BY valid_time DESC
-    LIMIT 100
+        SELECT *
+        FROM ingestion.weather_data
+        ORDER BY valid_time DESC
+        LIMIT %s OFFSET %s
     """
 
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute(sql)
+        cur.execute(sql, (limit, offset))
         return cur.fetchall()
+
     
 
 # Overview page

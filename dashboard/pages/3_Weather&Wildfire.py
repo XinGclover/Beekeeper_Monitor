@@ -1,26 +1,39 @@
-import streamlit as st
-import pandas as pd
+import os
 
-from dashboard.services.weather_service import get_weather_data
-from dashboard.services.wildfire_service import get_wildfire_data
-from core.db import get_db_conn
-import plotly.express as px 
-from dashboard.services.location_service import fetch_location_overview
+import pandas as pd
+import plotly.express as px
+import requests
+import streamlit as st
+from dotenv import load_dotenv
+
 from dashboard.utils.ui import get_risk_color
+
+load_dotenv()
+
+API_BASE_URL = os.getenv("API_BASE_URL") or st.secrets.get("API_BASE_URL")
+
+if not API_BASE_URL:
+    st.error("Missing API_BASE_URL")
+    st.stop()
+
+def fetch_json(path: str, params: dict | None = None):
+    url = f"{API_BASE_URL}{path}"
+    response = requests.get(url, params=params, timeout=30)
+    response.raise_for_status()
+    return response.json()
 
 # avoid Streamlit reruning scripts all the time, so you can do:
 @st.cache_data
 def load_all_data():
-    conn = get_db_conn()
-    try:
-        location_df = fetch_location_overview(conn)
-        weather_df = get_weather_data(conn)
-        wildfire_df = get_wildfire_data(conn)
+    location_data = fetch_json("/api/monitoring/locations/overview")
+    weather_data = fetch_json("/api/monitoring/weather")
+    wildfire_data = fetch_json("/api/monitoring/wildfire")
 
-        return location_df, weather_df, wildfire_df
+    location_df = pd.DataFrame(location_data)
+    weather_df = pd.DataFrame(weather_data)
+    wildfire_df = pd.DataFrame(wildfire_data)
 
-    finally:
-        conn.close()
+    return location_df, weather_df, wildfire_df
 
 location_df, weather_df, wildfire_df = load_all_data()
 

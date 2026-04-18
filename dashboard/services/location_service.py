@@ -1,7 +1,7 @@
-import pandas as pd
 from psycopg2.extras import RealDictCursor
 
-def fetch_location_overview(conn):
+
+def get_location_overview(conn):
     sql = """
         SELECT
             location_id,
@@ -24,4 +24,7 @@ def fetch_location_overview(conn):
           AND longitude IS NOT NULL
         ORDER BY city
     """
-    return pd.read_sql(sql, conn)
+
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        cur.execute(sql)
+        return cur.fetchall()
