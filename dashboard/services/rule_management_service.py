@@ -1,3 +1,5 @@
+from psycopg2.extras import RealDictCursor
+
 def fetch_alarm_rules(conn):
     sql = """
         SELECT
@@ -9,14 +11,12 @@ def fetch_alarm_rules(conn):
             severity_level_id,
             is_active
         FROM ingestion.alarm_rule
-        ORDER BY rule_id;
+        ORDER BY rule_id
     """
-    with conn.cursor() as cur:
-        cur.execute(sql)
-        columns = [desc[0] for desc in cur.description]
-        rows = cur.fetchall()
 
-    return [dict(zip(columns, row)) for row in rows]
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        cur.execute(sql)
+        return cur.fetchall()
 
 
 def update_alarm_rule(conn, rule_id: int, threshold, is_active: bool):
@@ -25,7 +25,11 @@ def update_alarm_rule(conn, rule_id: int, threshold, is_active: bool):
         SET
             threshold = %s,
             is_active = %s
-        WHERE rule_id = %s;
+        WHERE rule_id = %s
     """
+
     with conn.cursor() as cur:
         cur.execute(sql, (threshold, is_active, rule_id))
+    conn.commit()
+
+    return {"updated": 1, "rule_id": rule_id}

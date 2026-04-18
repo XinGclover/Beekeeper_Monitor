@@ -3,15 +3,21 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.utils.ui import get_risk_color
-from dashboard.utils.api_client import fetch_json
+from dashboard.utils.api_client import get_json, wait_for_backend
 
+with st.spinner("Waking up backend..."):
+    ready = wait_for_backend()
+
+if not ready:
+    st.warning("Backend still sleeping. Try again soon.")
+    st.stop()
 
 # avoid Streamlit reruning scripts all the time, so you can do:
 @st.cache_data
 def load_all_data():
-    location_data = fetch_json("/api/monitoring/locations/overview")
-    weather_data = fetch_json("/api/monitoring/weather")
-    wildfire_data = fetch_json("/api/monitoring/wildfire")
+    location_data = get_json("/api/monitoring/locations/overview")
+    weather_data = get_json("/api/monitoring/weather")
+    wildfire_data = get_json("/api/monitoring/wildfire")
 
     location_df = pd.DataFrame(location_data)
     weather_df = pd.DataFrame(weather_data)
