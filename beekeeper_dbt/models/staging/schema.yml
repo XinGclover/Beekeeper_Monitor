@@ -211,6 +211,53 @@ models:
       - name: severity_name
         description: "Name of the severity level."
 
+  - name: stg_alarm_rule
+    description: "Staging model for raw alarm rule data defining alarm conditions."
+    columns:
+      - name: rule_id
+        description: "Unique identifier for each alarm rule."
+        tests:
+          - unique
+          - not_null
+      - name: rule_name
+        description: "Name of the alarm rule."
+        tests:
+          - not_null
+      - name: metric_type_id
+        description: "Foreign key referencing the metric type being monitored."
+        tests:
+          - not_null
+      - name: condition_type
+        description: "Type of condition for the alarm (e.g., greater than, less than)."
+        tests:
+          - not_null
+      - name: threshold
+        description: "Threshold value for triggering the alarm."
+        tests:
+          - not_null
+      - name: severity_level_id
+        description: "Foreign key referencing the severity level of the alarm."
+      - name: is_active
+        description: "Boolean indicating if the alarm rule is currently active."
+        tests:
+          - not_null
+
+  - name: stg_alarm_rule_target
+    description: "Staging model for raw alarm rule target data defining what entities are monitored by rules."
+    columns:
+      - name: rule_id
+        description: "Foreign key referencing the alarm rule."
+        tests:
+          - not_null
+      - name: target_type_id
+        description: "Foreign key referencing the type of target (e.g., sensor, location)."
+        tests:
+          - not_null
+      - name: target_id
+        description: "Identifier of the specific target entity."
+        tests:
+          - not_null
+
   - name: stg_alarm_event
     description: "Staging model for raw alarm event data captured from ingestion."
     columns:
