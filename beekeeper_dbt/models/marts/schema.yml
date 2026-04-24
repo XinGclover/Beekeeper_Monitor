@@ -19,29 +19,68 @@ models:
           - not_null
       - name: time_key
         description: "Foreign key referencing the time dimension."
+      - name: measured_at
+        description: "Timestamp when the measurement was recorded."
+        tests:
+          - not_null
       - name: measured_value
         description: "The value measured by the sensor."
 
   - name: fact_sensor_alarm_event
     description: "Fact model for sensor-triggered alarm events."
     columns:
-      - name: event_id
-        description: "Unique identifier for each alarm event."
+      - name: alarm_event_key
+        description: "Unique identifier for each alarm event record."
         tests:
           - unique
           - not_null
+      - name: event_id
+        description: "Business key identifier for the alarm event."
+        tests:
+          - not_null
+      - name: rule_id
+        description: "Identifier for the alarm rule."
+        tests:
+          - not_null
+      - name: alarm_rule_key
+        description: "Foreign key referencing the alarm rule dimension."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_alarm_rule')
+              field: alarm_rule_key
       - name: sensor_data_id
         description: "Foreign key referencing the source sensor data record."
         tests:
           - not_null
-      - name: status
-        description: "Current status of the alarm event."
+      - name: sensor_key
+        description: "Foreign key referencing the sensor dimension."
         tests:
           - not_null
-      - name: triggered_at
-        description: "Timestamp when the alarm was triggered."
+          - relationships:
+              to: ref('dim_sensor')
+              field: sensor_key
+      - name: hive_key
+        description: "Foreign key referencing the hive dimension."
+        tests:
+          - relationships:
+              to: ref('dim_hive')
+              field: hive_key
+      - name: apiary_key
+        description: "Foreign key referencing the apiary dimension."
+        tests:
+          - relationships:
+              to: ref('dim_apiary')
+              field: apiary_key
+      - name: location_id
+        description: "Identifier for the location."
+      - name: severity_key
+        description: "Foreign key referencing the severity dimension."
         tests:
           - not_null
+          - relationships:
+              to: ref('dim_severity')
+              field: severity_key
       - name: date_key
         description: "Foreign key referencing the date dimension."
         tests:
@@ -56,6 +95,41 @@ models:
           - relationships:
               to: ref('dim_time')
               field: time_key
+      - name: event_source_type
+        description: "Type of alarm source."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['sensor']
+      - name: observed_value
+        description: "Measured value that triggered the alarm."
+      - name: threshold
+        description: "Threshold value used to determine the alarm condition."
+      - name: status
+        description: "Current status of the alarm event."
+        tests:
+          - not_null
+      - name: triggered_at
+        description: "Timestamp when the alarm was triggered."
+        tests:
+          - not_null
+
+  - name: fact_weather_alarm_event
+    description: "Fact model for weather-triggered alarm events."
+    columns:
+      - name: alarm_event_key
+        description: "Unique identifier for each alarm event record."
+        tests:
+          - unique
+          - not_null
+      - name: event_id
+        description: "Business key identifier for the alarm event."
+        tests:
+          - not_null
+      - name: rule_id
+        description: "Identifier for the alarm rule."
+        tests:
+          - not_null
       - name: alarm_rule_key
         description: "Foreign key referencing the alarm rule dimension."
         tests:
@@ -63,17 +137,202 @@ models:
           - relationships:
               to: ref('dim_alarm_rule')
               field: alarm_rule_key
-      - name: sensor_key
-        description: "Foreign key referencing the sensor dimension."
+      - name: weather_id
+        description: "Foreign key referencing the source weather data record."
+        tests:
+          - not_null
+      - name: location_id
+        description: "Identifier for the location."
+      - name: severity_key
+        description: "Foreign key referencing the severity dimension."
         tests:
           - not_null
           - relationships:
-              to: ref('dim_sensor')
-              field: sensor_key
+              to: ref('dim_severity')
+              field: severity_key
+      - name: date_key
+        description: "Foreign key referencing the date dimension."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_key
+      - name: time_key
+        description: "Foreign key referencing the time dimension."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_time')
+              field: time_key
+      - name: event_source_type
+        description: "Type of alarm source."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['weather']
       - name: observed_value
         description: "Measured value that triggered the alarm."
       - name: threshold
         description: "Threshold value used to determine the alarm condition."
+      - name: status
+        description: "Current status of the alarm event."
+        tests:
+          - not_null
+      - name: triggered_at
+        description: "Timestamp when the alarm was triggered."
+        tests:
+          - not_null
+
+  - name: fact_wildfire_alarm_event
+    description: "Fact model for wildfire-triggered alarm events."
+    columns:
+      - name: alarm_event_key
+        description: "Unique identifier for each alarm event record."
+        tests:
+          - unique
+          - not_null
+      - name: event_id
+        description: "Business key identifier for the alarm event."
+        tests:
+          - not_null
+      - name: rule_id
+        description: "Identifier for the alarm rule."
+        tests:
+          - not_null
+      - name: alarm_rule_key
+        description: "Foreign key referencing the alarm rule dimension."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_alarm_rule')
+              field: alarm_rule_key
+      - name: wildfire_id
+        description: "Foreign key referencing the source wildfire data record."
+        tests:
+          - not_null
+      - name: location_id
+        description: "Identifier for the location."
+      - name: severity_key
+        description: "Foreign key referencing the severity dimension."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_severity')
+              field: severity_key
+      - name: date_key
+        description: "Foreign key referencing the date dimension."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_key
+      - name: time_key
+        description: "Foreign key referencing the time dimension."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_time')
+              field: time_key
+      - name: event_source_type
+        description: "Type of alarm source."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['wildfire']
+      - name: observed_value
+        description: "Measured value that triggered the alarm."
+      - name: threshold
+        description: "Threshold value used to determine the alarm condition."
+      - name: status
+        description: "Current status of the alarm event."
+        tests:
+          - not_null
+      - name: triggered_at
+        description: "Timestamp when the alarm was triggered."
+        tests:
+          - not_null
+
+  - name: v_alarm_event_hourly
+    description: "Hourly aggregated view of alarm event counts for time-series analysis."
+    columns:
+      - name: alert_hour
+        description: "Hourly timestamp bucket for alarm events."
+        tests:
+          - not_null
+      - name: event_source_type
+        description: "Type of alarm source."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['sensor', 'weather', 'wildfire']
+      - name: alarm_count
+        description: "Number of alarm events in the hour."
+        tests:
+          - not_null
+
+  - name: v_top_sensors_by_alert_count
+    description: "View ranking sensors by their total alarm event count."
+    columns:
+      - name: sensor_key
+        description: "Unique key for the sensor."
+        tests:
+          - not_null
+      - name: sensor_id
+        description: "Business identifier for the sensor."
+      - name: sensor_type
+        description: "Type of the sensor."
+      - name: hive_id
+        description: "Identifier for the hive containing the sensor."
+      - name: apiary_id
+        description: "Identifier for the apiary containing the hive."
+      - name: alarm_count
+        description: "Total number of alarm events for this sensor."
+
+  - name: v_sensor_hourly_measurements
+    description: "Hourly aggregated sensor measurements with statistics."
+    columns:
+      - name: measurement_hour
+        description: "Hourly timestamp bucket for measurements."
+        tests:
+          - not_null
+      - name: sensor_key
+        description: "Unique key for the sensor."
+        tests:
+          - not_null
+      - name: avg_measured_value
+        description: "Average measured value in the hour."
+      - name: min_measured_value
+        description: "Minimum measured value in the hour."
+      - name: max_measured_value
+        description: "Maximum measured value in the hour."
+      - name: measurement_count
+        description: "Number of measurements in the hour."
+
+  - name: v_sensor_value_distribution
+    description: "Raw sensor measurements for distribution analysis."
+    columns:
+      - name: measured_value
+        description: "Individual measured value."
+      - name: sensor_key
+        description: "Unique key for the sensor."
+        tests:
+          - not_null
+      - name: measured_at
+        description: "Timestamp when the measurement was recorded."
+
+  - name: v_monitoring_kpi_overview
+    description: "Single-row view with key monitoring KPIs."
+    columns:
+      - name: total_alarm_count
+        description: "Total number of alarm events."
+      - name: active_sensor_count
+        description: "Number of currently active sensors."
+      - name: latest_measurement_at
+        description: "Timestamp of the most recent measurement."
+      - name: avg_sensor_value_last_24h
+        description: "Average sensor value in the last 24 hours."
+      - name: alarm_count_last_24h
+        description: "Number of alarm events in the last 24 hours."
 
 
       

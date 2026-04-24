@@ -20,6 +20,7 @@ select
     s.sensor_key,
     d.date_key,
     t.time_key,
+    fm.measured_at,
     fm.measured_value
 from measurements fm
 left join sensor s on fm.sensor_id = s.sensor_id

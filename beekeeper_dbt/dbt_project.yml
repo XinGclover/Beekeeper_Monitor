@@ -44,7 +44,14 @@ models:
 
     marts:
       +schema: marts
-      +materialized: table
+      facts:
+        +materialized: table
+
+      dimensions:
+        +materialized: table
+
+      analytics:
+        +materialized: view
 
 snapshots:
   beekeeper_dbt:

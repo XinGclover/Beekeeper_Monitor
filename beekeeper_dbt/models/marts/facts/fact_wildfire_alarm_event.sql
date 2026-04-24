@@ -2,44 +2,20 @@ with alarm_events as (
   select
     event_id,
     rule_id,
-    sensor_data_id,
+    wildfire_id,
     status,
     triggered_at,
     observed_value,
     threshold
   from {{ ref('stg_alarm_event') }}
-  where event_source_type = 'sensor'
+  where event_source_type = 'wildfire'
 ),
 
-sensor_data as (
+wildfire_data as (
   select
-    sensor_data_id,
-    sensor_id
-  from {{ ref('stg_sensor_data') }}
-),
-
-sensor as (
-  select
-    sensor_id,
-    sensor_key,
-    hive_id
-  from {{ ref('dim_sensor') }}
-),
-
-hive as (
-  select
-    hive_id,
-    hive_key,
-    apiary_id
-  from {{ ref('dim_hive') }}
-),
-
-apiary as (
-  select
-    apiary_id,
-    apiary_key,
+    wildfire_id,
     location_id
-  from {{ ref('dim_apiary') }}
+  from {{ ref('stg_wildfire_data') }}
 ),
 
 alarm_rule as (
@@ -76,24 +52,18 @@ select
   ae.event_id,
   ae.rule_id,
   ar.alarm_rule_key,
-  ae.sensor_data_id,
-  s.sensor_key,
-  h.hive_key,
-  a.apiary_key,
-  a.location_id,
+  ae.wildfire_id,
+  wd.location_id,
   sl.severity_key,
   dd.date_key,
   td.time_key,
-  'sensor' as event_source_type,
+  'wildfire' as event_source_type,
   ae.observed_value,
   ae.threshold,
   ae.status,
   ae.triggered_at
 from alarm_events ae
-left join sensor_data sd on ae.sensor_data_id = sd.sensor_data_id
-left join sensor s on sd.sensor_id = s.sensor_id
-left join hive h on s.hive_id = h.hive_id
-left join apiary a on h.apiary_id = a.apiary_id
+left join wildfire_data wd on ae.wildfire_id = wd.wildfire_id
 left join alarm_rule ar on ae.rule_id = ar.rule_id
 left join severity sl on ar.severity_id = sl.severity_id
 left join date_dim dd on ae.triggered_at::date = dd.full_date
