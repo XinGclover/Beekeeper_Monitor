@@ -22,5 +22,58 @@ models:
       - name: measured_value
         description: "The value measured by the sensor."
 
+  - name: fact_sensor_alarm_event
+    description: "Fact model for sensor-triggered alarm events."
+    columns:
+      - name: event_id
+        description: "Unique identifier for each alarm event."
+        tests:
+          - unique
+          - not_null
+      - name: sensor_data_id
+        description: "Foreign key referencing the source sensor data record."
+        tests:
+          - not_null
+      - name: status
+        description: "Current status of the alarm event."
+        tests:
+          - not_null
+      - name: triggered_at
+        description: "Timestamp when the alarm was triggered."
+        tests:
+          - not_null
+      - name: date_key
+        description: "Foreign key referencing the date dimension."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_key
+      - name: time_key
+        description: "Foreign key referencing the time dimension."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_time')
+              field: time_key
+      - name: alarm_rule_key
+        description: "Foreign key referencing the alarm rule dimension."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_alarm_rule')
+              field: alarm_rule_key
+      - name: sensor_key
+        description: "Foreign key referencing the sensor dimension."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_sensor')
+              field: sensor_key
+      - name: observed_value
+        description: "Measured value that triggered the alarm."
+      - name: threshold
+        description: "Threshold value used to determine the alarm condition."
+
 
       

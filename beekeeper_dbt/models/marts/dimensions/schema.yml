@@ -54,6 +54,45 @@ models:
   
       - name: is_current
         description: "Indicates if the record is the current version."
+
+  - name: dim_alarm_rule
+    description: "Dimension model for alarm rules defining monitoring conditions."
+    columns:
+      - name: alarm_rule_key
+        description: "Unique identifier for each alarm rule record."
+        tests:
+          - unique
+          - not_null
+      - name: rule_id
+        description: "Business key identifier for the alarm rule."
+        tests:
+          - not_null
+      - name: rule_name
+        description: "Name of the alarm rule."
+        tests:
+          - not_null
+      - name: metric_type_id
+        description: "Identifier for the metric type being monitored."
+        tests:
+          - not_null
+      - name: metric_type_name
+        description: "Name of the metric type being monitored."
+      - name: condition_type
+        description: "Type of condition for the alarm (e.g., greater than, less than)."
+        tests:
+          - not_null
+      - name: threshold
+        description: "Threshold value for triggering the alarm."
+        tests:
+          - not_null
+      - name: severity_id
+        description: "Identifier for the severity level of the alarm."
+      - name: severity_name
+        description: "Name of the severity level of the alarm."
+      - name: is_active
+        description: "Boolean indicating if the alarm rule is currently active."
+        tests:
+          - not_null
   
     
 

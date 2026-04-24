@@ -210,4 +210,159 @@ models:
           - not_null
       - name: severity_name
         description: "Name of the severity level."
+
+  - name: stg_alarm_rule
+    description: "Staging model for raw alarm rule data defining alarm conditions."
+    columns:
+      - name: rule_id
+        description: "Unique identifier for each alarm rule."
+        tests:
+          - unique
+          - not_null
+      - name: rule_name
+        description: "Name of the alarm rule."
+        tests:
+          - not_null
+      - name: metric_type_id
+        description: "Foreign key referencing the metric type being monitored."
+        tests:
+          - not_null
+      - name: condition_type
+        description: "Type of condition for the alarm (e.g., greater than, less than)."
+        tests:
+          - not_null
+      - name: threshold
+        description: "Threshold value for triggering the alarm."
+        tests:
+          - not_null
+      - name: severity_level_id
+        description: "Foreign key referencing the severity level of the alarm."
+      - name: is_active
+        description: "Boolean indicating if the alarm rule is currently active."
+        tests:
+          - not_null
+
+  - name: stg_alarm_rule_target
+    description: "Staging model for raw alarm rule target data defining what entities are monitored by rules."
+    columns:
+      - name: rule_id
+        description: "Foreign key referencing the alarm rule."
+        tests:
+          - not_null
+      - name: target_type_id
+        description: "Foreign key referencing the type of target (e.g., sensor, location)."
+        tests:
+          - not_null
+      - name: target_id
+        description: "Identifier of the specific target entity."
+        tests:
+          - not_null
+
+  - name: stg_alarm_event
+    description: "Staging model for raw alarm event data captured from ingestion."
+    columns:
+      - name: event_id
+        description: "Unique identifier for each alarm event."
+        tests:
+          - unique
+          - not_null
+      - name: rule_id
+        description: "Foreign key referencing the alarm rule that fired."
+        tests:
+          - not_null
+      - name: sensor_data_id
+        description: "Reference to the source sensor data record when the alarm originated from a sensor."
+      - name: weather_id
+        description: "Reference to the source weather data record when the alarm originated from weather data."
+      - name: wildfire_id
+        description: "Reference to the source wildfire data record when the alarm originated from wildfire data."
+      - name: triggered_at
+        description: "Timestamp when the alarm was triggered."
+        tests:
+          - not_null
+      - name: status
+        description: "Current status of the alarm event."
+        tests:
+          - not_null
+      - name: observed_value
+        description: "Measured value that triggered the alarm."
+      - name: threshold
+        description: "Threshold value used to determine whether the alarm condition was met."
+      - name: event_source_type
+        description: "Derived source type of the alarm event: sensor, weather, or wildfire."
+        tests:
+          - accepted_values:
+              values: ['sensor', 'weather', 'wildfire']
+
+  - name: stg_weather_data
+    description: "Staging model for raw weather observation data from external sources."
+    columns:
+      - name: weather_id
+        description: "Unique identifier for each weather data record."
+        tests:
+          - unique
+          - not_null
+      - name: location_id
+        description: "Foreign key referencing the location where the weather was observed."
+        tests:
+          - not_null
+      - name: air_temperature
+        description: "Air temperature in degrees Celsius."
+      - name: relative_humidity
+        description: "Relative humidity as a percentage."
+      - name: wind_speed
+        description: "Wind speed in kilometers per hour."
+      - name: wind_direction
+        description: "Wind direction in degrees (0-360)."
+      - name: valid_time
+        description: "Timestamp indicating when the weather observation is valid."
+        tests:
+          - not_null
+      - name: fetched_at
+        description: "Timestamp when the data was fetched into the staging model."
+        tests:
+          - not_null
+
+  - name: stg_wildfire_data
+    description: "Staging model for raw wildfire detection data from satellite sources."
+    columns:
+      - name: wildfire_id
+        description: "Unique identifier for each wildfire detection record."
+        tests:
+          - unique
+          - not_null
+      - name: location_id
+        description: "Foreign key referencing the location of the wildfire detection."
+      - name: latitude
+        description: "Latitude coordinate of the detection point."
+        tests:
+          - not_null
+      - name: longitude
+        description: "Longitude coordinate of the detection point."
+        tests:
+          - not_null
+      - name: brightness
+        description: "Brightness of the detection pixel (radiative power)."
+      - name: confidence
+        description: "Confidence level of the wildfire detection (single character)."
+      - name: frp
+        description: "Fire Radiative Power in megawatts."
+      - name: satellite
+        description: "Name or identifier of the satellite that detected the fire."
+      - name: instrument
+        description: "Name of the instrument/sensor used for detection."
+      - name: daynight
+        description: "Indicates whether the detection occurred during day or night (D/N)."
+      - name: severity_level_id
+        description: "Foreign key referencing the assigned severity level of the detection."
+      - name: status
+        description: "Current status of the wildfire detection (e.g., active, confirmed, resolved)."
+      - name: detected_at
+        description: "Timestamp when the wildfire was detected."
+        tests:
+          - not_null
+      - name: fetched_at
+        description: "Timestamp when the data was fetched into the staging model."
+        tests:
+          - not_null
         
