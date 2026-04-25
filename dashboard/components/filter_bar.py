@@ -1,12 +1,7 @@
 import streamlit as st
 
 from dashboard.utils.filter_utils import Filters
-from dashboard.services.filter_service import (
-    get_locations,
-    get_apiaries,
-    get_hives,
-    get_sensors,
-)
+from dashboard.services.filter_service import get_filter_options
 from dashboard.components.time_filter import render_time_filter
 
 
@@ -17,7 +12,7 @@ def _to_options(rows, id_key, label_key):
     return options
 
 
-def render_filter_bar(conn) -> Filters:
+def render_filter_bar() -> Filters:
     if "location_id" not in st.session_state:
         st.session_state.location_id = None
     if "apiary_id" not in st.session_state:
@@ -27,15 +22,17 @@ def render_filter_bar(conn) -> Filters:
     if "sensor_id" not in st.session_state:
         st.session_state.sensor_id = None
 
-    locations = get_locations(conn)
-    apiaries = get_apiaries(conn, st.session_state.location_id)
-    hives = get_hives(conn, st.session_state.location_id, st.session_state.apiary_id)
-    sensors = get_sensors(
-        conn,
-        st.session_state.location_id,
-        st.session_state.apiary_id,
-        st.session_state.hive_id,
+    # Get all filter options in one API call
+    filter_data = get_filter_options(
+        location_id=st.session_state.location_id,
+        apiary_id=st.session_state.apiary_id,
+        hive_id=st.session_state.hive_id,
     )
+
+    locations = filter_data.get("locations", [])
+    apiaries = filter_data.get("apiaries", [])
+    hives = filter_data.get("hives", [])
+    sensors = filter_data.get("sensors", [])
 
     location_options = _to_options(locations, "location_id", "location_name")
     apiary_options = _to_options(apiaries, "apiary_id", "apiary_name")
@@ -43,9 +40,10 @@ def render_filter_bar(conn) -> Filters:
     sensor_options = _to_options(sensors, "sensor_id", "sensor_name")
 
     with st.container(key="sticky_top_filters"):
-        col1, col2, col3, col4 = st.columns(4)
+        # Row 1: Location, Apiary, Hive, Sensor filters
+        col_location, col_apiary, col_hive, col_sensor = st.columns(4)
 
-        with col1:
+        with col_location:
             new_location = st.selectbox(
                 "Location",
                 options=list(location_options.keys()),
@@ -62,7 +60,7 @@ def render_filter_bar(conn) -> Filters:
             st.session_state.sensor_id = None
             st.rerun()
 
-        with col2:
+        with col_apiary:
             new_apiary = st.selectbox(
                 "Apiary",
                 options=list(apiary_options.keys()),
@@ -78,7 +76,7 @@ def render_filter_bar(conn) -> Filters:
             st.session_state.sensor_id = None
             st.rerun()
 
-        with col3:
+        with col_hive:
             new_hive = st.selectbox(
                 "Hive",
                 options=list(hive_options.keys()),
@@ -93,7 +91,7 @@ def render_filter_bar(conn) -> Filters:
             st.session_state.sensor_id = None
             st.rerun()
 
-        with col4:
+        with col_sensor:
             new_sensor = st.selectbox(
                 "Sensor",
                 options=list(sensor_options.keys()),
@@ -103,9 +101,8 @@ def render_filter_bar(conn) -> Filters:
                 else 0,
             )
 
-        col_time, space = st.columns([3,1])
-        with col_time:
-            render_time_filter()
+        # Row 2: Time range selector (full width)
+        render_time_filter()
 
     st.session_state.sensor_id = new_sensor
 
@@ -114,6 +111,5 @@ def render_filter_bar(conn) -> Filters:
         apiary_id=st.session_state.apiary_id,
         hive_id=st.session_state.hive_id,
         sensor_id=st.session_state.sensor_id,
-        time_range=st.session_state.time_range
+        time_range=st.session_state.time_range,
     )
-

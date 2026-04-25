@@ -81,3 +81,7 @@ def put_json(path: str, data: dict | None = None, **kwargs):
 
 def delete_json(path: str, **kwargs):
     return request_json("DELETE", path, **kwargs)
+
+
+# Alias for semantic clarity
+fetch_json = get_json

@@ -1,6 +1,6 @@
 from psycopg2.extras import RealDictCursor
 
-from dashboard.utils.filter_utils import build_location_time_filter, Filters
+from dashboard.utils.filter_utils import build_filter_conditions, Filters
 
 
 def get_wildfire_data(conn, limit=100, offset=0):
@@ -18,7 +18,7 @@ def get_wildfire_data(conn, limit=100, offset=0):
 
 # Overview page
 def get_wildfire_map_points(conn, filters: Filters | None = None):
-    where_sql, params = build_location_time_filter(filters, time_column="detected_at")
+    where_sql, params = build_filter_conditions(filters, time_column="detected_at")
 
     sql = f"""
         select *
@@ -34,7 +34,7 @@ def get_wildfire_map_points(conn, filters: Filters | None = None):
 
 
 def get_latest_wildfire_events(conn, filters: Filters | None = None):
-    where_sql, params = build_location_time_filter(filters, time_column="detected_at")
+    where_sql, params = build_filter_conditions(filters, time_column="detected_at")
 
     sql = f"""
         select *

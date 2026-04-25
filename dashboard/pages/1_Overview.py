@@ -1,5 +1,4 @@
 import streamlit as st
-from core.db import get_db_conn
 from dashboard.services.overview_service import load_overview_data
 from dashboard.components.filter_bar import render_filter_bar
 from dashboard.components.sensor_overview_section import render_sensor_overview_section
@@ -14,9 +13,8 @@ def show_overview_page():
     st.title("Overview")
     inject_sticky_topbar_css()
 
-    conn = get_db_conn()
-    filters = render_filter_bar(conn)
-    data = load_overview_data(conn, filters)
+    filters = render_filter_bar()
+    data = load_overview_data(filters)
 
     render_kpi_row(data["kpis"])
     render_sensor_overview_section(data["sensor"])

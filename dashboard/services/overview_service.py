@@ -1,47 +1,56 @@
-from dashboard.services.sensor_service import (
-    get_sensor_data_timeline_overview,
-    get_latest_sensor_data_overview
-)
+from dashboard.utils.api_client import fetch_json
+from dashboard.utils.filter_utils import build_api_params
 from dashboard.services.kpi_service import build_sensor_kpis
-from dashboard.services.weather_service import get_weather_timeline
-from dashboard.services.wildfire_service import (get_latest_wildfire_events, get_wildfire_map_points)
-from dashboard.services.alarm_event_service import (get_alarm_events_latest, get_alarm_events_hourly_overview)
-from dashboard.services.notification_service import ( get_notifications_latest, get_unread_notification_count)
 import pandas as pd
 
 
-
-def load_overview_data(conn, filters):
-    timeline_rows = get_sensor_data_timeline_overview(conn, filters)
-    latest_rows = get_latest_sensor_data_overview(conn, filters)
-
-    df_timeline = pd.DataFrame(timeline_rows)
-    df_latest = pd.DataFrame(latest_rows)
+def load_overview_data(filters):
+    """
+    Load overview data via API endpoints.
+    
+    Args:
+        filters: Filters object with location, apiary, hive, sensor, and time_range
+        
+    Returns:
+        Dictionary with kpis, sensor, weather, wildfire, alarms, and notifications data
+    """
+    params = build_api_params(filters)
+    
+    # Fetch all data from API endpoints
+    sensor_timeline = fetch_json("/api/monitoring/sensors/overview/timeline", params=params)
+    sensor_latest = fetch_json("/api/monitoring/sensors/overview/latest", params=params)
+    weather_timeline = fetch_json("/api/monitoring/weather/overview/timeline", params=params)
+    wildfire_latest = fetch_json("/api/monitoring/wildfire/overview/latest", params=params)
+    wildfire_map = fetch_json("/api/monitoring/wildfire/overview/map", params=params)
+    alarm_latest = fetch_json("/api/monitoring/alarms/overview/latest", params=params)
+    alarm_hourly = fetch_json("/api/monitoring/alarms/overview/hourly", params=params)
+    notification_latest = fetch_json("/api/monitoring/notifications/overview/latest", params=params)
+    notification_unread = fetch_json("/api/monitoring/notifications/overview/unread-count", params=params)
+    
+    # Build KPIs from sensor data
+    df_timeline = pd.DataFrame(sensor_timeline) if sensor_timeline else pd.DataFrame()
+    df_latest = pd.DataFrame(sensor_latest) if sensor_latest else pd.DataFrame()
+    
     return {
-        # "summary": {
-        #     "sensor_count": get_sensor_count(conn, filters),
-        #     "location_count": get_location_count(conn, filters),
-        # },
         "kpis": build_sensor_kpis(df_timeline, df_latest),
         "sensor": {
-            "timeseries": timeline_rows,
-            "latest": latest_rows
+            "timeseries": sensor_timeline or [],
+            "latest": sensor_latest or []
         },
         "weather": {
-        #     "summary": get_latest_weather_summary(conn, filters),
-            "timeseries": get_weather_timeline(conn, filters),
-         },
+            "timeseries": weather_timeline or [],
+        },
         "wildfire": {
-            "latest": get_latest_wildfire_events(conn, filters),
-            "map_points": get_wildfire_map_points(conn, filters),
+            "latest": wildfire_latest or [],
+            "map_points": wildfire_map or [],
         },
         "alarms": {
-            "latest": get_alarm_events_latest(conn, filters),
-            "hourly": get_alarm_events_hourly_overview(conn, filters),
+            "latest": alarm_latest or [],
+            "hourly": alarm_hourly or [],
         },
         "notifications": {
-            "latest": get_notifications_latest(conn, filters),
-            "unread_count": get_unread_notification_count(conn, filters),
+            "latest": notification_latest or [],
+            "unread_count": notification_unread.get("unread_count", 0) if notification_unread else 0,
         },
     }
 

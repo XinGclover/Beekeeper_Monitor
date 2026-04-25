@@ -12,7 +12,6 @@ if str(ROOT) not in sys.path:
 
 
 def main():
-    import streamlit as st
 
     st.title("🐝 Beekeeper Monitoring System")
 
@@ -79,7 +78,9 @@ def main():
    
     st.markdown("### System Architecture")
 
-    tab1, tab2, tab3 = st.tabs(["Conceptual Model", "Logical Model", "Physical Model"])
+    tab1, tab2, tab3, tab4 = st.tabs(
+        ["Conceptual Model", "Logical Model", "Physical Model", "Dimensional Model"]
+    )
 
     with tab1:
         st.subheader("Conceptual Model")
@@ -92,6 +93,11 @@ def main():
     with tab3:
         st.subheader("Physical Model")
         st.image("assets/physical_model.svg", width="stretch")
+
+    with tab4:
+        st.subheader("Dimensional Model")
+        st.image("assets/dimensional_model.svg", width="stretch")
+
 
 if __name__ == "__main__":
     main()
