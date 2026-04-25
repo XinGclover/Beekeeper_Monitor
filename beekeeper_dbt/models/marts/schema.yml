@@ -281,6 +281,10 @@ models:
         description: "Business identifier for the sensor."
       - name: sensor_type
         description: "Type of the sensor."
+      - name: sensor_name
+        description: "Human-readable sensor name (e.g., 'Sensor 42')."
+      - name: sensor_label
+        description: "Descriptive label for the sensor including hive context (e.g., 'Hive 5 - Sensor 42')."
       - name: hive_id
         description: "Identifier for the hive containing the sensor."
       - name: apiary_id
@@ -307,6 +311,10 @@ models:
         description: "Maximum measured value in the hour."
       - name: measurement_count
         description: "Number of measurements in the hour."
+      - name: sensor_name
+        description: "Human-readable sensor name (e.g., 'Sensor 42')."
+      - name: sensor_label
+        description: "Descriptive label for the sensor including hive context (e.g., 'Hive 5 - Sensor 42')."
 
   - name: v_sensor_value_distribution
     description: "Raw sensor measurements for distribution analysis."
@@ -319,6 +327,10 @@ models:
           - not_null
       - name: measured_at
         description: "Timestamp when the measurement was recorded."
+      - name: sensor_name
+        description: "Human-readable sensor name (e.g., 'Sensor 42')."
+      - name: sensor_label
+        description: "Descriptive label for the sensor including hive context (e.g., 'Hive 5 - Sensor 42')."
 
   - name: v_monitoring_kpi_overview
     description: "Single-row view with key monitoring KPIs."
