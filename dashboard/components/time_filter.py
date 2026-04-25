@@ -4,15 +4,16 @@ import streamlit as st
 def render_time_filter():
     return st.segmented_control(
         "Time Range",
-        options=["1h", "6h", "24h", "7d", "30d"],
+        options=["1h", "6h", "24h", "7d", "30d", "90d"],
         format_func=lambda x: {
             "1h": "1 Hours",
             "6h": "6 Hours",
             "24h": "24 Hours",
             "7d": "7 Days",
             "30d": "30 Days",
+            "90d": "90 Days",
         }[x],
-        default=st.session_state.get("time_range", "6h"),
+        default=st.session_state.get("time_range", "90d"),
         key="time_range",
         selection_mode="single",
         label_visibility="collapsed",
