@@ -3,6 +3,7 @@ import pandas as pd
 
 from dashboard.utils.api_client import get_json, post_json, wait_for_backend
 from dashboard.utils.date_utils import parse_datetime_fields
+from dashboard.components.demo_status import render_demo_status_sidebar
 
 st.title("Alarm Events & Notifications")
 
@@ -12,6 +13,8 @@ with st.spinner("Waking up backend..."):
 if not ready:
     st.warning("Backend still sleeping. Try again soon.")
     st.stop()
+
+render_demo_status_sidebar()
 
 tab1, tab2 = st.tabs(["Alarm Events", "Notifications"])
 

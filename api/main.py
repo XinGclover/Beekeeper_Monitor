@@ -7,6 +7,7 @@ from api.routers.monitoring_locations import router as monitoring_locations_rout
 from api.routers.monitoring_alarms import router as monitoring_alarms_router
 from api.routers.monitoring_notifications import router as monitoring_notifications_router
 from api.routers.monitoring_alarm_rules import router as monitoring_alarm_rules_router
+from api.routers.demo import router as demo_router
 
 app = FastAPI(title="Beekeeper Monitoring API")
 
@@ -17,6 +18,7 @@ app.include_router(monitoring_locations_router)
 app.include_router(monitoring_alarms_router)
 app.include_router(monitoring_notifications_router)
 app.include_router(monitoring_alarm_rules_router)
+app.include_router(demo_router)
 
 @app.get("/")
 def root():

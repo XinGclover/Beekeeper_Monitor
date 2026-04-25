@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 from dashboard.utils.api_client import get_json, wait_for_backend
+from dashboard.components.demo_status import render_demo_status_sidebar
 
 st.title("Sensor")
 
@@ -11,6 +12,8 @@ with st.spinner("Waking up backend..."):
 if not ready:
     st.warning("Backend still sleeping. Try again soon.")
     st.stop()
+
+render_demo_status_sidebar()
 
 try:
     # -------- live sensor values --------

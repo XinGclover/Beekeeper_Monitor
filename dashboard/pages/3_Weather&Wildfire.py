@@ -4,6 +4,7 @@ import streamlit as st
 
 from dashboard.utils.ui import get_risk_color
 from dashboard.utils.api_client import get_json, wait_for_backend
+from dashboard.components.demo_status import render_demo_status_sidebar
 
 with st.spinner("Waking up backend..."):
     ready = wait_for_backend()
@@ -11,6 +12,8 @@ with st.spinner("Waking up backend..."):
 if not ready:
     st.warning("Backend still sleeping. Try again soon.")
     st.stop()
+
+render_demo_status_sidebar()
 
 # avoid Streamlit reruning scripts all the time, so you can do:
 @st.cache_data

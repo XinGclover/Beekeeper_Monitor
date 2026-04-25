@@ -31,7 +31,6 @@ TIME_RANGE_MAP = {
     "24h": timedelta(hours=24),
     "7d": timedelta(days=7),
     "30d": timedelta(days=30),
-    "90d": timedelta(days=90),
 }
 
 def resolve_time_range(time_range: str):

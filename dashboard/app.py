@@ -1,19 +1,34 @@
-from dotenv import load_dotenv
-
-load_dotenv()
-
-import streamlit as st
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.append(str(ROOT))
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+import streamlit as st
+
+from dashboard.utils.api_client import get_json, post_json
+from dashboard.components.demo_status import render_demo_status_sidebar
 
 
 def main():
 
     st.title("🐝 Beekeeper Monitoring System")
+
+    with st.sidebar:
+        st.header("Live Demo")
+
+        if st.button("Start 30-minute live demo"):
+            try:
+                response = post_json("/api/demo/start")
+                if response.get("running"):
+                    st.success(response.get("message", "Live demo started."))
+                else:
+                    st.error(response.get("message", "Unable to start live demo."))
+            except Exception as error:
+                st.error(f"Failed to start live demo: {error}")
+    
+    render_demo_status_sidebar()
 
     st.markdown("""
     ### Project Overview
