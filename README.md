@@ -240,7 +240,7 @@ Superset is used for analytical validation and exploration of the dbt-transforme
 dbt → Superset → analytics_marts
 ```
 
-![Superset Dashboard](./docs/images/superset_dashboard.png)
+![Superset Dashboard](./assets/superset_dashboard.png)
 
 ---
 
