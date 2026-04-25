@@ -223,6 +223,27 @@ Stores:
 
 ---
 
+## 📊 Analytical Dashboard (Superset)
+
+Superset is used for analytical validation and exploration of the dbt-transformed data models, connecting directly to the Neon PostgreSQL `analytics_marts` schema.
+
+### Key Dashboard Components
+
+* **KPI Cards:** Total Alarms, Active Sensors, Average Sensor Value
+* **Time-series Charts:** Sensor measurement trends, Alarm event timelines
+* **Distribution Charts:** Sensor value distributions, Measurement volume analysis
+* **Ranking:** Top sensors by alert frequency
+
+### Architecture
+
+```
+dbt → Superset → analytics_marts
+```
+
+![Superset Dashboard](./assets/superset_dashboard.png)
+
+---
+
 ### 🕒 Slowly Changing Dimensions (SCD)
 
 Implemented via dbt snapshots:
