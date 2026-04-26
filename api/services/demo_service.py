@@ -140,7 +140,7 @@ async def _spawn_background_process(
         *command,
         cwd=str(PROJECT_ROOT),
         stdout=asyncio.subprocess.DEVNULL,
-        stderr=asyncio.subprocess.PIPE,
+        stderr=None,
     )
 
     demo_state["processes"].append({"label": label, "process": process})

@@ -138,6 +138,7 @@ def insert_sensor_alarm_event(
             sql,
             (rule_id, sensor_data_id, observed_value, threshold_value),
         )
+    conn.commit()
 
 def insert_weather_alarm_event(
     conn,
@@ -163,6 +164,7 @@ def insert_weather_alarm_event(
             sql,
             (rule_id, weather_id, observed_value, threshold_value),
         )
+    conn.commit()
 
 
 def insert_wildfire_alarm_event(
@@ -189,3 +191,4 @@ def insert_wildfire_alarm_event(
             sql,
             (rule_id, wildfire_id, observed_value, threshold_value),
         )
+    conn.commit()

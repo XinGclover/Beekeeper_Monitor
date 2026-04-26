@@ -2,11 +2,21 @@ from psycopg2.extras import RealDictCursor
 
 def create_notifications(conn):
     sql = """
-        INSERT INTO ingestion.notification
-        (user_id, event_id, title, message)
+        INSERT INTO ingestion.notification (
+            user_id,
+            event_id,
+            notification_status,
+            is_read,
+            title,
+            message,
+            created_at,
+            channel_id
+        )
         SELECT
           uar.user_id,
           ae.event_id,
+          'pending',
+          false,
           ar.rule_name AS title,
           CASE
             WHEN ae.sensor_data_id IS NOT NULL THEN
@@ -29,12 +39,16 @@ def create_notifications(conn):
 
             ELSE
               ar.rule_name || ' triggered'
-          END AS message
+          END AS message,
+          now(),
+          nc.channel_id
         FROM ingestion.alarm_event ae
         JOIN ingestion.alarm_rule ar
           ON ae.rule_id = ar.rule_id
         JOIN ingestion.user_alarm_rule uar
           ON ae.rule_id = uar.rule_id
+        JOIN ingestion.notification_channel nc
+          ON nc.channel_name = 'in_app'
         LEFT JOIN ingestion.notification n
           ON n.user_id = uar.user_id
           AND n.event_id = ae.event_id
@@ -43,8 +57,10 @@ def create_notifications(conn):
 
     with conn.cursor() as cur:
         cur.execute(sql)
-        return cur.rowcount
+        created_count = cur.rowcount
 
+    conn.commit()
+    return created_count
 
 def get_notifications_for_user(conn, user_id: int):
     sql = """
@@ -61,6 +77,7 @@ def get_notifications_for_user(conn, user_id: int):
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute(sql, (user_id,))
         return cur.fetchall()
+    conn.commit()
 
 def get_unread_notifications_for_user(conn, user_id: int):
     sql = """
@@ -90,3 +107,4 @@ def mark_notification_as_read(conn, notification_id: int):
     with conn.cursor() as cur:
         cur.execute(sql, (notification_id,))
         return cur.rowcount
+    conn.commit()
