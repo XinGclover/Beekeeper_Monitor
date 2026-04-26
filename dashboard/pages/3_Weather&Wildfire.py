@@ -96,6 +96,23 @@ with tab2:
     else:
         st.caption(f"Last updated: {df_weather['fetched_at'].max()}")
 
+        # Display weather observations
+        display_cols = [
+            "location_id",
+            "air_temperature",
+            "relative_humidity",
+            "wind_speed",
+            "wind_direction",
+            "valid_time",
+            "fetched_at",
+        ]
+        available_cols = [col for col in display_cols if col in df_weather.columns]
+
+        if available_cols:
+            st.dataframe(df_weather[available_cols], use_container_width=True)
+        else:
+            st.info("Weather data columns not available.")
+
 with tab3:
     st.subheader("Wildfire alerts / events")
     df_wildfire = pd.DataFrame(wildfire_df)

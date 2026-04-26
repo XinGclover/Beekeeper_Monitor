@@ -10,7 +10,7 @@ BASE_URL = "https://opendata-download-metfcst.smhi.se/api"
 
 def build_forecast_url(lon: float, lat: float) -> str:
     return (
-        f"{BASE_URL}/category/pmp3g/version/2/"
+        f"{BASE_URL}/category/snow1g/version/1/"
         f"geotype/point/lon/{lon}/lat/{lat}/data.json"
     )
 
@@ -31,17 +31,16 @@ def fetch_smhi_forecast(lat: float, lon: float) -> dict[str, Any]:
 
 def parse_forecast(location_id: int, job_id: int, payload: dict) -> WeatherObservation:
     series = payload["timeSeries"][0]
-    parameters = series["parameters"]
-    valid_time = series["validTime"]
+    data = series["data"]
 
     return WeatherObservation(
         job_id=job_id,
         location_id=location_id,
-        air_temperature=get_param(parameters, "t"),
-        relative_humidity=get_param(parameters, "r"),
-        wind_speed=get_param(parameters, "ws"),
-        wind_direction=get_param(parameters, "wd"),
-        valid_time=valid_time,
+        air_temperature=data.get("air_temperature"),
+        relative_humidity=data.get("relative_humidity"),
+        wind_speed=data.get("wind_speed"),
+        wind_direction=data.get("wind_from_direction"),
+        valid_time=series["time"],
     )
 
 
