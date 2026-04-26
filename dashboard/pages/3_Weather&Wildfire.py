@@ -36,15 +36,26 @@ location_df, weather_df, wildfire_df = load_all_data()
 def show_location_map_page():
     st.title("Weather & Wildfire Map")
 
+    location_data = get_json("/api/monitoring/locations/overview")
+    location_df = pd.DataFrame(location_data)
+
     if location_df.empty:
-        st.info("No location data found.")
+        st.info("No location data available for map.")
+        return
+
+    location_df["latitude"] = pd.to_numeric(location_df["latitude"], errors="coerce")
+    location_df["longitude"] = pd.to_numeric(location_df["longitude"], errors="coerce")
+    location_df = location_df.dropna(subset=["latitude", "longitude"])
+
+    if location_df.empty:
+        st.info("No valid location coordinates available for the map.")
         return
 
     location_df["risk_color"] = location_df["severity_level_id"].apply(get_risk_color)
 
     st.subheader("Map")
 
-    fig = px.scatter_map(
+    fig = px.scatter_mapbox(
         location_df,
         lat="latitude",
         lon="longitude",
@@ -72,7 +83,7 @@ def show_location_map_page():
     )
 
     fig.update_layout(
-        map_style="open-street-map",
+        mapbox_style="open-street-map",
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
     )
 
