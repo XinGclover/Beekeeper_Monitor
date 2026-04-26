@@ -32,3 +32,6 @@ db_dump/
 # macOS system files
 .DS_Store
 **/.DS_Store
+
+
+db/test/

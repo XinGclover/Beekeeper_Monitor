@@ -8,10 +8,12 @@ from dashboard.components.wildfire_overview_section import render_wildfire_overv
 from dashboard.components.alarm_overview_section import render_alarm_overview_section
 from dashboard.components.notification_overview_section import render_notification_overview_section
 from dashboard.components.ui_styles import (inject_sticky_topbar_css,inject_page_compact_css)
+from dashboard.components.demo_status import render_demo_status_sidebar
 
 def show_overview_page():
     st.title("Overview")
     inject_sticky_topbar_css()
+    render_demo_status_sidebar()
 
     filters = render_filter_bar()
     data = load_overview_data(filters)

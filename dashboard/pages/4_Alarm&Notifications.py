@@ -3,6 +3,7 @@ import pandas as pd
 
 from dashboard.utils.api_client import get_json, post_json, wait_for_backend
 from dashboard.utils.date_utils import parse_datetime_fields
+from dashboard.components.demo_status import render_demo_status_sidebar
 
 st.title("Alarm Events & Notifications")
 
@@ -12,6 +13,8 @@ with st.spinner("Waking up backend..."):
 if not ready:
     st.warning("Backend still sleeping. Try again soon.")
     st.stop()
+
+render_demo_status_sidebar()
 
 tab1, tab2 = st.tabs(["Alarm Events", "Notifications"])
 
@@ -24,11 +27,11 @@ with tab1:
     st.subheader("Hourly Alarm Events")
     alarm_hourly_data =get_json("/api/monitoring/alarms/hourly")
     df_alarm_hourly = pd.DataFrame(alarm_hourly_data)
-    st.line_chart(
-    df_alarm_hourly,
-    x="hour",
-    y="alarm_count"
-)
+
+    if df_alarm_hourly.empty:
+        st.info("No hourly alarm data available yet.")
+    else:
+        st.line_chart(df_alarm_hourly, x="hour", y="alarm_count")
 
 with tab2:
     st.subheader("Latest notifications")
