@@ -10,8 +10,8 @@ def render_demo_status_sidebar():
 
         try:
             status = get_json("/api/demo/status")
-        except Exception:
-            st.warning("⚠️ Backend not reachable")
+        except Exception as exc:
+            st.warning(f"⚠️ Backend not reachable: {exc}")
             return
 
         if status.get("running"):
