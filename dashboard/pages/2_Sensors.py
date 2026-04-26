@@ -70,8 +70,11 @@ try:
                 .set_index("measured_at")
             )
 
-            st.dataframe(chart_df)
-            st.line_chart(chart_df)
+            if chart_df.empty:
+                st.info("No sensor data in the selected time window.")
+            else:
+                st.dataframe(chart_df)
+                st.line_chart(chart_df)
         else:
             st.info("No sensor timeline found.")
 

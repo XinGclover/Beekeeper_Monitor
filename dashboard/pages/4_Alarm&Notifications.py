@@ -27,11 +27,11 @@ with tab1:
     st.subheader("Hourly Alarm Events")
     alarm_hourly_data =get_json("/api/monitoring/alarms/hourly")
     df_alarm_hourly = pd.DataFrame(alarm_hourly_data)
-    st.line_chart(
-    df_alarm_hourly,
-    x="hour",
-    y="alarm_count"
-)
+
+    if df_alarm_hourly.empty:
+        st.info("No hourly alarm data available yet.")
+    else:
+        st.line_chart(df_alarm_hourly, x="hour", y="alarm_count")
 
 with tab2:
     st.subheader("Latest notifications")

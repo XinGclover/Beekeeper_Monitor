@@ -56,7 +56,7 @@ def build_sensor_kpis(
     """
 
     empty_result = {
-        "avg_temperature": {"label": "AVG TEMPERATURE", "value": None, "unit": "°C"},
+        "avg_temperature": {"label": "AVG TEMPE", "value": None, "unit": "°C"},
         "avg_humidity": {"label": "AVG HUMIDITY", "value": None, "unit": "%"},
         "min_measurement": {"label": "MIN VALUE", "value": None, "unit": ""},
         "max_measurement": {"label": "MAX VALUE", "value": None, "unit": ""},
@@ -84,7 +84,7 @@ def build_sensor_kpis(
     result = {
         "avg_temperature": _build_metric_kpi(
             temp_df["measurement"],
-            label="AVG TEMPERATURE",
+            label="AVG TEMPE",
             unit="°C",
         ),
         "avg_humidity": _build_metric_kpi(
@@ -104,7 +104,9 @@ def build_sensor_kpis(
         },
         "sensor_count": {
             "label": "SENSORS",
-            "value": int(df_latest["sensor_id"].nunique()) if df_latest is not None and not df_latest.empty else 0,
+            "value": int(df_latest["sensor_id"].nunique())
+            if df_latest is not None and not df_latest.empty
+            else 0,
             "unit": "",
         },
     }
