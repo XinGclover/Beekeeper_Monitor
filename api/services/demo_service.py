@@ -35,12 +35,15 @@ from typing import Any
 
 from fastapi import HTTPException
 from psycopg2.extensions import connection
+import os
+import json
 
 logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEMO_DURATION_SECONDS = 30 * 60
 RETENTION_DAYS = 30
+DEMO_STATE_FILE = PROJECT_ROOT / ".demo_state.json"
 
 demo_state: dict[str, Any] = {
     "running": False,
@@ -50,6 +53,43 @@ demo_state: dict[str, Any] = {
     "messages": [],
 }
 
+def _write_demo_state_file(started_at: datetime, ends_at: datetime) -> None:
+    DEMO_STATE_FILE.write_text(
+        json.dumps(
+            {
+                "started_at": started_at.isoformat(),
+                "ends_at": ends_at.isoformat(),
+                "pids": [
+                    entry["process"].pid
+                    for entry in demo_state.get("processes", [])
+                    if entry.get("process") is not None
+                ],
+            }
+        )
+    )
+
+
+def _read_demo_state_file() -> dict[str, Any] | None:
+    if not DEMO_STATE_FILE.exists():
+        return None
+
+    try:
+        return json.loads(DEMO_STATE_FILE.read_text())
+    except Exception:
+        DEMO_STATE_FILE.unlink(missing_ok=True)
+        return None
+
+
+def _pid_is_running(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+        return True
+    except OSError:
+        return False
+
+
+def _remove_demo_state_file() -> None:
+    DEMO_STATE_FILE.unlink(missing_ok=True)
 
 def _now() -> datetime:
     return datetime.now(timezone.utc)
@@ -146,6 +186,9 @@ async def _spawn_background_process(
     demo_state["processes"].append({"label": label, "process": process})
     demo_state["messages"].append(f"✅ Started {label}")
 
+    if demo_state.get("started_at") and demo_state.get("ends_at"):
+        _write_demo_state_file(demo_state["started_at"], demo_state["ends_at"])
+
     return process
 
 
@@ -211,6 +254,7 @@ async def _shutdown_demo() -> None:
     demo_state["running"] = False
     demo_state["started_at"] = None
     demo_state["ends_at"] = None
+    _remove_demo_state_file()
 
 
 async def _run_demo_job() -> None:
@@ -306,7 +350,7 @@ async def start_demo_job(conn: connection) -> dict[str, Any]:
             ],
         }
     )
-
+    _write_demo_state_file(started_at, ends_at)
     asyncio.create_task(_run_demo_job())
 
     return {
@@ -318,4 +362,45 @@ async def start_demo_job(conn: connection) -> dict[str, Any]:
 
 
 def get_demo_status() -> dict[str, Any]:
-    return _state_payload()
+    payload = _state_payload()
+
+    if payload["running"]:
+        return payload
+
+    saved_state = _read_demo_state_file()
+    if not saved_state:
+        return payload
+
+    try:
+        started_at = datetime.fromisoformat(saved_state["started_at"])
+        ends_at = datetime.fromisoformat(saved_state["ends_at"])
+        pids = saved_state.get("pids", [])
+
+        now = _now()
+        still_in_time = now < ends_at
+        has_running_process = any(_pid_is_running(int(pid)) for pid in pids)
+
+        if still_in_time and not pids:
+            remaining_seconds = int((ends_at - now).total_seconds())
+            return {
+                "running": True,
+                "started_at": started_at.isoformat(),
+                "ends_at": ends_at.isoformat(),
+                "remaining_seconds": remaining_seconds,
+            }
+
+        if still_in_time and has_running_process:
+            remaining_seconds = int((ends_at - now).total_seconds())
+            return {
+                "running": True,
+                "started_at": started_at.isoformat(),
+                "ends_at": ends_at.isoformat(),
+                "remaining_seconds": remaining_seconds,
+            }
+
+        _remove_demo_state_file()
+        return payload
+
+    except Exception:
+        _remove_demo_state_file()
+        return payload
