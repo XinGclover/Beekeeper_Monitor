@@ -1,7 +1,6 @@
 import streamlit as st
 from dashboard.utils.api_client import get_json
 
-
 def render_demo_status_sidebar():
     """Render live demo status in the sidebar for multipage apps."""
     with st.sidebar:

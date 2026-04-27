@@ -69,7 +69,6 @@ def show_location_map_page():
             "wildfire_time": True,
         },
         color="risk_color",
-        size="frp",
         zoom=5,
         height=500,
         color_discrete_map={
@@ -127,5 +126,8 @@ with tab2:
 with tab3:
     st.subheader("Wildfire alerts / events")
     df_wildfire = pd.DataFrame(wildfire_df)
-    st.caption(f"Last updated: {df_wildfire['fetched_at'].max()}")
+    if not df_wildfire.empty and "fetched_at" in df_wildfire.columns:
+        st.caption(f"Last updated: {df_wildfire['fetched_at'].max()}")
+    else:
+        st.caption("Last updated: No wildfire data available")
     st.dataframe(df_wildfire)
