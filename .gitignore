@@ -35,3 +35,4 @@ db_dump/
 
 
 db/test/
+.demo_state.json

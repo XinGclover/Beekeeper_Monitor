@@ -54,19 +54,18 @@ demo_state: dict[str, Any] = {
 }
 
 def _write_demo_state_file(started_at: datetime, ends_at: datetime) -> None:
-    DEMO_STATE_FILE.write_text(
-        json.dumps(
-            {
-                "started_at": started_at.isoformat(),
-                "ends_at": ends_at.isoformat(),
-                "pids": [
-                    entry["process"].pid
-                    for entry in demo_state.get("processes", [])
-                    if entry.get("process") is not None
-                ],
-            }
-        )
-    )
+    data = {
+        "started_at": started_at.isoformat(),
+        "ends_at": ends_at.isoformat(),
+        "pids": [
+            entry["process"].pid
+            for entry in demo_state.get("processes", [])
+            if entry.get("process") is not None
+        ],
+    }
+
+    with open(DEMO_STATE_FILE, "w") as f:
+        json.dump(data, f)
 
 
 def _read_demo_state_file() -> dict[str, Any] | None:
@@ -186,9 +185,6 @@ async def _spawn_background_process(
     demo_state["processes"].append({"label": label, "process": process})
     demo_state["messages"].append(f"✅ Started {label}")
 
-    if demo_state.get("started_at") and demo_state.get("ends_at"):
-        _write_demo_state_file(demo_state["started_at"], demo_state["ends_at"])
-
     return process
 
 
@@ -208,14 +204,10 @@ async def _repeat_pipeline(
                 [sys.executable, "-m", module_path],
                 f"{label} pipeline",
             )
-            demo_state["messages"].append(
-                f"✅ {label} pipeline executed #{iteration}"
-            )
+            demo_state["messages"].append(f"✅ {label} pipeline executed #{iteration}")
         except Exception as exc:
             logger.error("%s pipeline error: %s", label, exc, exc_info=True)
-            demo_state["messages"].append(
-                f"⚠️ {label} pipeline error: {str(exc)[:200]}"
-            )
+            demo_state["messages"].append(f"⚠️ {label} pipeline error: {str(exc)[:200]}")
 
         if _now() >= end_time:
             break
@@ -318,12 +310,12 @@ async def _run_demo_job() -> None:
 async def start_demo_job(conn: connection) -> dict[str, Any]:
     logger.info("Demo start request received")
 
-    if demo_state["running"]:
+    current_status = get_demo_status()
+
+    if current_status.get("running"):
         return {
-            "running": True,
+            **current_status,
             "message": "Demo already running",
-            "started_at": _format_datetime(demo_state["started_at"]),
-            "ends_at": _format_datetime(demo_state["ends_at"]),
         }
 
     try:
@@ -345,8 +337,7 @@ async def start_demo_job(conn: connection) -> dict[str, Any]:
             "ends_at": ends_at,
             "processes": [],
             "messages": [
-                f"🚀 Demo scheduled for 30 minutes "
-                f"({RETENTION_DAYS}-day retention)"
+                f"🚀 Demo scheduled for 30 minutes ({RETENTION_DAYS}-day retention)"
             ],
         }
     )
@@ -362,45 +353,31 @@ async def start_demo_job(conn: connection) -> dict[str, Any]:
 
 
 def get_demo_status() -> dict[str, Any]:
-    payload = _state_payload()
-
-    if payload["running"]:
-        return payload
-
     saved_state = _read_demo_state_file()
-    if not saved_state:
-        return payload
 
-    try:
-        started_at = datetime.fromisoformat(saved_state["started_at"])
-        ends_at = datetime.fromisoformat(saved_state["ends_at"])
-        pids = saved_state.get("pids", [])
+    if saved_state:
+        try:
+            started_at = datetime.fromisoformat(saved_state["started_at"])
+            ends_at = datetime.fromisoformat(saved_state["ends_at"])
+            now = _now()
 
-        now = _now()
-        still_in_time = now < ends_at
-        has_running_process = any(_pid_is_running(int(pid)) for pid in pids)
+            if now < ends_at:
+                return {
+                    "running": True,
+                    "started_at": started_at.isoformat(),
+                    "ends_at": ends_at.isoformat(),
+                    "remaining_seconds": int((ends_at - now).total_seconds()),
+                }
 
-        if still_in_time and not pids:
-            remaining_seconds = int((ends_at - now).total_seconds())
+            # ❌ not delete file
             return {
-                "running": True,
+                "running": False,
                 "started_at": started_at.isoformat(),
                 "ends_at": ends_at.isoformat(),
-                "remaining_seconds": remaining_seconds,
+                "remaining_seconds": 0,
             }
 
-        if still_in_time and has_running_process:
-            remaining_seconds = int((ends_at - now).total_seconds())
-            return {
-                "running": True,
-                "started_at": started_at.isoformat(),
-                "ends_at": ends_at.isoformat(),
-                "remaining_seconds": remaining_seconds,
-            }
+        except Exception:
+            return {"running": False}
 
-        _remove_demo_state_file()
-        return payload
-
-    except Exception:
-        _remove_demo_state_file()
-        return payload
+    return {"running": False}
